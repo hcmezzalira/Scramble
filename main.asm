@@ -24,9 +24,22 @@
                   TAM_SAIR_MENU_S equ $-sair_menu_s
     sair_menu     db "               [ Sair  ]"
                   TAM_SAIR_MENU equ $-sair_menu
+                  
+    ; Mensagens do cabecalho
+                  
+    score         db "SCORE: "
+                  TAM_SCORE equ $-score
+                  
+    score_valor   dw 0
+                  TAM_SCORE_VALOR equ $-score_valor
+                  
+    score_valor_s db "00000"
+                  TAM_SCORE_VALOR_S equ $-score_valor_s
     
     ; Jogar = 1, menu selecionado = Jogar
     jogar         db 1
+    
+    ; Mensagem da Fase 1
     
     fase1_logo    db "         _____                _ " , CR, LF
                   db "        |  ___|_ _ ___  ___  / |" , CR, LF
@@ -73,6 +86,68 @@ pop BX
 pop AX
 ret
 delay_4seg endp
+
+; Converte o score para ASCII
+score_to_ascii proc
+push AX
+push BX
+push CX
+push DX
+push DI
+push SI
+    
+    ; Carrega o score e offset da string do score
+    mov AX, score_valor
+    mov CX, 5
+    mov DI, OFFSET score_valor_s
+    mov BX, 10
+    
+    
+    ; Divisao por 10 para obter o resto da divisao
+    loop_divisao:
+        xor DX, DX
+        div BX
+        
+        ; Converte o digito para ASCII
+        add DL, '0'
+        ; Salva na string
+        mov [DI], DL
+        ; Move o ponteiro para o pr?ximo digito ? esquerda
+        dec DI
+        loop loop_divisao
+    
+pop DI
+pop SI
+pop DX
+pop CX
+pop BX
+pop AX
+ret    
+score_to_ascii endp
+
+; Exibe o score (ASCII)
+exibe_score proc
+push AX
+push CX
+push BP
+    
+    call score_to_ascii
+    
+    mov BP, OFFSET score_valor_s 
+    mov AH, 13h                 
+    mov AL, 0h                  
+    xor BH, BH                  
+    mov BL, 0Ah                 
+    mov CX, TAM_SCORE_VALOR_S  
+    mov DH, 0                   
+    mov DL, 7                   
+    int 10h
+    
+pop BP
+pop CX
+pop AX
+ret
+exibe_score endp
 
 ; Proc para alterar a cor do Jogar e Sair no menu
 menu_cor proc
@@ -171,7 +246,27 @@ push ES
     mov DL, 0        
     int 10h
     
-    call delay_4seg
+    ; Delay de 4 segundos
+    ; call delay_4seg
+    
+    ; Limpa a tela
+    mov AL, 13h
+    mov AH, 0
+    int 10h
+    
+    ; Mostra palavra score no cabe?alho da fase
+    mov BP, OFFSET score   
+    mov AH, 13h      
+    mov AL, 0h       
+    xor BH, BH       
+    mov BL, 0Fh     
+    mov CX, TAM_SCORE  
+    mov DH, 0       
+    mov DL, 0        
+    int 10h
+    
+    ; Mostra o score no cabe?alho da fase
+    call exibe_score
     
 pop ES
 pop SI
