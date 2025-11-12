@@ -25,6 +25,9 @@
     sair_menu     db "               [ Sair  ]"
                   TAM_SAIR_MENU equ $-sair_menu
                   
+    ; Jogar = 1, menu selecionado = Jogar
+    jogar         db 1
+    
     ; Mensagens do cabecalho
                   
     score         db "SCORE: "
@@ -36,8 +39,20 @@
     score_valor_s db "00000"
                   TAM_SCORE_VALOR_S equ $-score_valor_s
     
-    ; Jogar = 1, menu selecionado = Jogar
-    jogar         db 1
+    nave_vidas    db 9,9,9,9,9,0,0,0Ch,0Ch,0Ch,0Ch,0,0Eh,0Eh,0Eh,0Eh,0,0,0
+                  db 0,9,9,9,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0,0Eh,0,0,0Eh,0Eh,0,0
+                  db 0,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0,0Eh,0,0Eh,0Eh,0,0Eh,0Eh
+                  db 0Eh,0Eh,0Eh,0Eh,0Eh,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0,0,0,0,0,0,0
+                  db 0,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch
+                  db 0,9,9,9,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0,0
+                  db 9,9,9,9,9,0,0,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0Ch,0,0,0,0
+                  
+    nave_linhas equ 7
+    nave_colunas equ 19
+    vidas         db 3
+    
+    tempo         db "TEMPO: "
+                  TAM_TEMPO equ $-tempo
     
     ; Mensagem da Fase 1
     
@@ -49,7 +64,7 @@
                   TAM_FASE1_LOGO equ $-fase1_logo
     
     ; Ticks de delay              
-    DELAY_INICIO_FASE equ 73              
+    DELAY_INICIO_FASE equ 73      
     
 .code
 
@@ -148,6 +163,65 @@ pop CX
 pop AX
 ret
 exibe_score endp
+
+; Desenha nave que representa as vidas
+desenha_nave_vidas proc
+push AX
+push CX
+push DX
+push DI
+push SI
+push BP
+push ES
+    
+    mov AX, 0A000h
+    mov ES, AX
+
+    mov DX, 0
+    
+    mov SI, OFFSET nave_vidas
+    ; Contador de linhas
+    mov BP, nave_linhas
+    
+    linha_loop:
+        push DX     ; Armazena da pilha a linha correspondente
+        mov AX, DX  ; AX recebe posicao Y
+        mov CX, 320 ; CX recebe 320
+        mul CX      ; Multiplica AX com CX armazenando em AX
+        mov DI, AX  ; Armazena em DI o resultado da multiplicacao
+        
+        mov CX, nave_colunas ; CX recebe 19 (colunas) 
+        push BX              ; Joga BX para pilha 
+    coluna_loop:
+        mov AL, [SI]   ; Armazena em AL o OFFSET da cor 
+        push AX         ; Carrega na pilha a cor
+        mov AX, DI      ; Carrega o resultado da multiplicacao em AX
+        add AX, BX      ; Soma o resultado com deslocamento X
+        mov DI, AX      ; Carrega em DI o resultado da soma
+        pop AX          ; Retorna a cor em AL
+        mov ES:[DI], AL ; Carrega a cor no endere?o correto
+        sub DI, BX
+
+        inc BX           ; Incrementa 1 em BX (eixo X)
+        inc SI           ; Incrementa 1 em SI vetor de cores
+        loop coluna_loop ; Entra no loop ate todas as colunas da linha forem salvas na memoria
+        
+        pop BX         ; Retorna o valor o valor da coluna 
+        pop DX         ; Retorna da pilha o valor da linha
+        inc DX         ; Incrementa DX eixo Y
+        dec BP         ; Decrementa BP (Linhas)
+        cmp BP, 0      ; Compara para verificar se chegou a linha 0
+        jnz linha_loop ; Enquanto nao igual a zero
+        
+pop ES
+pop BP 
+pop SI
+pop DI
+pop DX
+pop CX
+pop AX
+ret
+desenha_nave_vidas endp
 
 ; Proc para alterar a cor do Jogar e Sair no menu
 menu_cor proc
@@ -267,6 +341,31 @@ push ES
     
     ; Mostra o score no cabe?alho da fase
     call exibe_score
+    
+    xor AX, AX
+    mov BX, 130             ; Deslocamento inicial X
+    mov AL, vidas           ; Carrega em AL o numero de vidas
+    mov CX, AX              ; Carrega em CX o numero de vidas para o loop 
+    numero_vidas:
+    call desenha_nave_vidas ; Desenha a nave da vida (Entrada BX: Deslocamento)
+        add BX, 30          ; Espacamento entre as naves
+    loop numero_vidas       ; Ate nao ter mais vidas decrementa CX
+    
+    ; Mostra palavra tempo no cabecalho da fase
+    mov BP, OFFSET tempo   
+    mov AH, 13h      
+    mov AL, 0h       
+    xor BH, BH       
+    mov BL, 0Fh     
+    mov CX, TAM_TEMPO  
+    mov DH, 0       
+    mov DL, 31        
+    int 10h
+    
+    
+    
+    call espera_tecla
+    
     
 pop ES
 pop SI
