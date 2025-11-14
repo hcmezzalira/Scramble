@@ -43,7 +43,7 @@ push ES
     int 10h
     
     ; Delay de 4 segundos
-    call delay_4seg
+    ; call delay_4seg
     
     ; Limpa a tela
     mov AL, 13h
@@ -74,14 +74,21 @@ push ES
     ; Mostra o score no cabe?alho da fase
     call exibe_score
     
-    xor AX, AX
-    mov BX, 130             ; Deslocamento inicial X
-    mov AL, vidas           ; Carrega em AL o numero de vidas
-    mov CX, AX              ; Carrega em CX o numero de vidas para o loop 
+    ; Parametros para exibicao das vidas restantes
+    mov BX, 130                ; Deslocamento inicial X
+    mov DX, 0                  ; Deslocamento inicial Y
+    mov SI, OFFSET nave_vidas  ; Carrega o offset da sprite em SI
+    mov AX, nave_vidas_linhas  ; Carrega em AX o numero de linhas 
+    mov aux_linhas, AX         ; Carrega o numero de linhas da sprite em aux_linhas
+    mov AX, nave_vidas_colunas ; Carrega em AX o numero de colunas
+    mov aux_colunas, AX        ; Carrega o numero de colunas da sprite em aux_colunas
     
+    xor AX, AX                ; Zera AX
+    mov AL, vidas             ; Carrega em AL o numero de vidas
+    mov CX, AX                ; Carrega em CX o numero de vidas para o loop 
 numero_vidas:
-    call desenha_nave_vidas ; Desenha a nave da vida (Entrada BX: Deslocamento)
-    add BX, 30          ; Espacamento entre as naves
+    call desenha_sprite ; Desenha a nave da vida (Entrada BX: Deslocamento)
+    add BX, 30              ; Espacamento entre as naves
     loop numero_vidas       ; Ate nao ter mais vidas decrementa CX
     
     ; Mostra palavra tempo no cabecalho da fase

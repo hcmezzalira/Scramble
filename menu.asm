@@ -22,10 +22,90 @@ menu_loop proc
     mov DL, 0        
     int 10h  
     
+    mov BX, 1   ; Deslocamento inicial X da nave Jet
+    mov DI, 319 ; Deslocamento inicial X da nave Alien           
+    mov SI, 319 ; Deslocamento inicial X do Meteoro
+    
     ; Loop do menu para selecionar entre jogar e sair
 loop_menu:
+
+    ; ------------------ Nave Jet -------------------;
+    
+    dec BX
+    mov DX, 60
+    mov SI, OFFSET limpa_jet_v
+    mov AX, limpa_jet_v_l
+    mov aux_linhas, AX
+    mov AX, limpa_jet_v_c
+    mov aux_colunas, AX
+    call desenha_sprite
+    
+    inc BX
+    
+    cmp BX, 320               ; Compara com o utlimo pixel da horizontal 
+    jnz nao_pula_nave_jet     ; Se igual a zero, zera BX para reiniciar
+    mov BX, 1                 ; Deslocamento inicial X
+    
+nao_pula_nave_jet:
+    mov DX, 60               ; Deslocamento inicial Y
+    mov SI, OFFSET nave_jet   ; Carrega o offset da sprite em SI
+    mov AX, nave_jet_linhas   ; Carrega em AX o numero de linhas 
+    mov aux_linhas, AX        ; Carrega o numero de linhas da sprite em aux_linhas
+    mov AX, nave_jet_colunas  ; Carrega em AX o numero de colunas
+    mov aux_colunas, AX       ; Carrega o numero de colunas da sprite em aux_colunas
+    call desenha_sprite
+    
+    inc BX
+    
+    push BX
+    ; ------------------ Nave Alien -------------------;
+    
+    add DI, 28
+    inc DI
+    mov DX, 120
+    mov SI, OFFSET limpa_jet_v
+    mov AX, limpa_jet_v_l
+    mov aux_linhas, AX
+    mov AX, limpa_jet_v_c
+    mov aux_colunas, AX
+    mov BX, DI
+    call desenha_sprite
+    
+    sub DI, 28
+    dec DI
+    cmp DI, 0               ; Compara com o utlimo pixel da horizontal 
+    jnz nao_pula_nave_alien     ; Se igual a zero, zera BX para reiniciar
+    mov DI,  320                 ; Deslocamento inicial X
+    
+nao_pula_nave_alien:
+    mov DX, 120                ; Deslocamento inicial Y
+    mov SI, OFFSET nave_alien ; Carrega o offset da sprite em SI
+    mov AX, nave_jet_linhas   ; Carrega em AX o numero de linhas 
+    mov aux_linhas, AX        ; Carrega o numero de linhas da sprite em aux_linhas
+    mov AX, nave_jet_colunas  ; Carrega em AX o numero de colunas
+    mov aux_colunas, AX       ; Carrega o numero de colunas da sprite em aux_colunas
+    mov BX, DI
+    call desenha_sprite
+    
+    dec DI
+    
+    ; -----------------------------------------------------------;
+    pop BX
+    
+    ; Delay para as sprites do menu
+    push AX
+    push CX
+    push DX
+    mov AH, 86h
+    mov CX, delay_b
+    mov DX, delay_a
+    int 15h
+    pop DX
+    pop CX
+    pop AX
+    
     call menu_cor
-    call espera_tecla
+    call le_tecla
         
     ; Compara para verificar se foi pressionado enter
     cmp AL, 13
@@ -45,14 +125,18 @@ loop_menu:
     ; Compara / altera a posicao em destaque
 seta_baixo:
     cmp jogar, 0
-    jz loop_menu
+    jnz nao_loop_menu1
+    jmp loop_menu
+nao_loop_menu1:
     mov jogar, 0
     jmp loop_menu
     
     ; Compara / altera a posicao em destaque
 seta_cima:
     cmp jogar, 1
-    jz loop_menu
+    jnz nao_loop_menu2
+    jmp loop_menu
+nao_loop_menu2:
     mov jogar, 1
     jmp loop_menu
     
@@ -87,7 +171,7 @@ push BP
     xor BH, BH       
     mov BL, 0Fh     
     mov CX, TAM_JOGAR_MENU  
-    mov DH, 16        
+    mov DH, 20        
     mov DL, 0        
     int 10h 
     
@@ -97,7 +181,7 @@ push BP
     xor BH, BH       
     mov BL, 04h     
     mov CX, TAM_SAIR_MENU 
-    mov DH, 18        
+    mov DH, 22        
     mov DL, 0        
     int 10h 
     jmp fim
@@ -109,7 +193,7 @@ selecao_jogar:
     xor BH, BH       
     mov BL, 04h     
     mov CX, TAM_JOGAR_MENU  
-    mov DH, 16        
+    mov DH, 20        
     mov DL, 0        
     int 10h 
     
@@ -119,7 +203,7 @@ selecao_jogar:
     xor BH, BH       
     mov BL, 0Fh     
     mov CX, TAM_SAIR_MENU 
-    mov DH, 18        
+    mov DH, 22        
     mov DL, 0        
     int 10h 
 

@@ -21,6 +21,23 @@ espera_tecla proc
 ret
 espera_tecla endp
 
+le_tecla proc
+
+    xor AX, AX
+    mov AH, 01h
+    int 16h
+    jz sem_tecla
+    
+    mov AH, 00h
+    int 16h
+    ret
+    
+sem_tecla:
+    xor AX, AX
+    ret
+    
+le_tecla endp
+
 ; Proc para inserir espera de 4 segundos
 delay_4seg proc
 push AX
