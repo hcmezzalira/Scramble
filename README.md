@@ -3,7 +3,5 @@ Projeto para a disciplina de Arquitetura de Computadores, voltado ao desenvolvim
 
 ## Team
 
-### Contributors
-
 - **Hérvin Concolatto Mezzalira**
 - **Milena Baroni Gambetta**
