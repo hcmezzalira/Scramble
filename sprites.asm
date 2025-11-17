@@ -35,20 +35,27 @@ linha_loop:
     mov CX, aux_colunas ; CX recebe 19 (colunas) 
     push BX             ; Joga BX para pilha 
     
+    push AX
+    
 coluna_loop:
-    mov AL, [SI]    ; Armazena em AL o OFFSET da cor 
-    push AX         ; Carrega na pilha a cor
+    
     mov AX, DI      ; Carrega o resultado da multiplicacao em AX
     add AX, BX      ; Soma o resultado com deslocamento X
     mov DI, AX      ; Carrega em DI o resultado da soma
-    pop AX          ; Retorna a cor em AL
+
+    mov AL, [SI]    ; Armazena em AL o OFFSET da cor 
     mov ES:[DI], AL ; Carrega a cor no endereco correto
     sub DI, BX      ; Subtrai o deslocamento BX
 
     inc BX           ; Incrementa 1 em BX (eixo X)
+    cmp BX, 320
+    jne pula_coluna_s
+    sub BX, 320
+pula_coluna_s:
     inc SI           ; Incrementa 1 em SI vetor de cores
     loop coluna_loop ; Entra no loop ate todas as colunas da linha forem salvas na memoria
-        
+    
+    pop AX
     pop BX         ; Retorna da pilha o valor da coluna 
     pop DX         ; Retorna da pilha o valor da linha
     inc DX         ; Incrementa DX eixo Y

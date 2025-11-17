@@ -41,10 +41,9 @@ loop_menu:
     call desenha_sprite
     
     inc BX
-    
     cmp BX, 320               ; Compara com o utlimo pixel da horizontal 
     jnz nao_pula_nave_jet     ; Se igual a zero, zera BX para reiniciar
-    mov BX, 1                 ; Deslocamento inicial X
+    mov BX, 0                 ; Deslocamento inicial X
     
 nao_pula_nave_jet:
     mov DX, 60               ; Deslocamento inicial Y
@@ -55,11 +54,18 @@ nao_pula_nave_jet:
     mov aux_colunas, AX       ; Carrega o numero de colunas da sprite em aux_colunas
     call desenha_sprite
     
+    
     inc BX
     
     push BX
     ; ------------------ Nave Alien -------------------;
-    
+    push AX
+    mov AX, direcao_alien
+    cmp AX, 0
+    pop AX
+    jz direita
+
+esquerda:
     add DI, 28
     inc DI
     mov DX, 120
@@ -72,12 +78,15 @@ nao_pula_nave_jet:
     call desenha_sprite
     
     sub DI, 28
-    dec DI
-    cmp DI, 0               ; Compara com o utlimo pixel da horizontal 
-    jnz nao_pula_nave_alien     ; Se igual a zero, zera BX para reiniciar
-    mov DI,  320                 ; Deslocamento inicial X
+    push AX
+    cmp DI, 0
+    jnz nao_inverte_e
+    mov AX, 0
+    mov direcao_alien, AX
+nao_inverte_e:
+    pop AX
     
-nao_pula_nave_alien:
+nao_pula_nave_alien_e:
     mov DX, 120                ; Deslocamento inicial Y
     mov SI, OFFSET nave_alien ; Carrega o offset da sprite em SI
     mov AX, nave_jet_linhas   ; Carrega em AX o numero de linhas 
@@ -86,8 +95,38 @@ nao_pula_nave_alien:
     mov aux_colunas, AX       ; Carrega o numero de colunas da sprite em aux_colunas
     mov BX, DI
     call desenha_sprite
-    
+ 
     dec DI
+    
+direita:
+    mov DX, 120
+    mov SI, OFFSET limpa_jet_v
+    mov AX, limpa_jet_v_l
+    mov aux_linhas, AX
+    mov AX, limpa_jet_v_c
+    mov aux_colunas, AX
+    mov BX, DI
+    call desenha_sprite
+    
+    push AX
+    cmp DI, 320
+    jnz nao_inverte_d
+    mov AX, 1
+    mov direcao_alien, AX
+nao_inverte_d:
+    pop AX
+    
+nao_pula_nave_alien_d:
+    mov DX, 120                ; Deslocamento inicial Y
+    mov SI, OFFSET nave_alien ; Carrega o offset da sprite em SI
+    mov AX, nave_jet_linhas   ; Carrega em AX o numero de linhas 
+    mov aux_linhas, AX        ; Carrega o numero de linhas da sprite em aux_linhas
+    mov AX, nave_jet_colunas  ; Carrega em AX o numero de colunas
+    mov aux_colunas, AX       ; Carrega o numero de colunas da sprite em aux_colunas
+    mov BX, DI
+    call desenha_sprite
+
+    inc DI
     
     ; -----------------------------------------------------------;
     pop BX
