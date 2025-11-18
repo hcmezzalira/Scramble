@@ -15,9 +15,10 @@
     C equ 0Ch
     D equ 0Dh
     E equ 0Eh
-    delay_a       dw 10000
+    delay_a       dw 1000
     delay_b       dw 00000
     direcao_alien dw 1
+    meteoro_menu_x dw 291
     
     ;------------------------------------------------------------------;
     ;------------------------Dados do Menu-----------------------------;
@@ -118,6 +119,20 @@
                   db 0,0,0,0,0,0,5,5,D,2,2,A,E,E,5,5,D,E,E,E,E,0,0,0,0,0,0,0,0
                   db 0,0,0,0,0,0,0,0,0,0,0,2,2,2,A,E,E,E,0,0,0,0,0,0,0,0,0,0,0
                   db 0,0,0,0,0,0,0,0,0,0,0,2,2,2,A,E,E,E,0,0,0,0,0,0,0,0,0,0,0
+
+        meteoro   db 0,0,0,0,0,0,0,D,D,D,D,D,D,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                  db 0,0,0,0,0,0,D,D,D,D,D,D,D,0,0,0,D,D,D,0,0,0,0,0,0,0,0,0,0
+                  db 0,0,0,0,D,D,C,D,C,D,D,C,C,C,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                  db 0,0,D,D,D,D,C,C,C,D,D,D,D,C,C,C,0,0,0,D,D,C,0,0,0,0,0,0,0
+                  db 0,0,D,D,C,D,C,C,C,D,D,D,C,D,D,D,0,0,0,0,0,0,0,0,0,0,0,0,0
+                  db 0,D,C,C,D,C,C,C,C,D,C,C,D,D,C,D,D,D,0,0,0,D,D,0,0,0,0,0,0
+                  db D,C,C,C,C,C,C,C,D,C,C,C,C,D,C,C,D,0,0,0,0,0,0,0,0,0,0,0,0
+                  db D,C,C,C,D,D,C,C,D,C,C,C,C,D,C,C,D,0,0,0,0,0,0,0,0,0,0,0,0
+                  db 0,D,D,D,C,D,C,C,C,C,C,C,D,D,C,C,C,C,0,0,0,C,C,0,0,0,0,0,0
+                  db 0,D,D,D,D,C,D,C,C,C,C,C,D,D,D,C,0,0,0,0,0,0,0,0,0,0,0,0,0
+                  db 0,0,0,D,D,D,C,C,D,C,C,C,D,D,D,0,0,C,C,0,0,0,0,0,0,0,0,0,0
+                  db 0,0,0,0,D,D,C,D,D,D,C,C,C,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+                  db 0,0,0,0,0,0,D,D,D,D,D,D,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 
                   
     ; Numero de linhas das sprites do menu (Nave Jet, Nave Alien e Meteoro)
     sprites_menu_l equ 13
@@ -127,18 +142,18 @@
     
     ; Limpa sprites do menu (Nave Jet, Nave Alien e Meteoro)
     limpa_sm_v   db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
+                 db 0
+                 db 0
+                 db 0
+                 db 0
+                 db 0
+                 db 0
+                 db 0
+                 db 0
+                 db 0
+                 db 0
+                 db 0
+                 db 0
                
     ; Limpa sprites do menu (Nave Jet, Nave Alien e Meteoro)
     limpa_sm_h   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
