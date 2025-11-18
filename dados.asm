@@ -15,9 +15,9 @@
     C equ 0Ch
     D equ 0Dh
     E equ 0Eh
-    delay_a       dw 50000
+    delay_a       dw 10000
     delay_b       dw 00000
-    direcao_alien dw 0
+    direcao_alien dw 1
     
     ;------------------------------------------------------------------;
     ;------------------------Dados do Menu-----------------------------;

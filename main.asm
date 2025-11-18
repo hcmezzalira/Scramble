@@ -2,11 +2,13 @@
 .stack 100h
 
 .data
-    
+
+; Arquivos de dados utilizados
 include dados.asm     
     
 .code
 
+; Arquivos de codigo utilizados
 include aux.asm
 include tempo.asm
 include score.asm
@@ -14,13 +16,14 @@ include menu.asm
 include fase1.asm
 include sprites.asm
 
-; Proc para aguardar teclado
+; Rotina para aguardar teclado parando o programa (Utilizada para verificar codigo)
 espera_tecla proc
     mov AH, 00h
     int 16h
 ret
 espera_tecla endp
 
+; Rotina para ler teclado sem parar o programa
 le_tecla proc
 
     xor AX, AX

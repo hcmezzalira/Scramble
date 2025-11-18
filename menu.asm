@@ -23,7 +23,7 @@ menu_loop proc
     int 10h  
     
     mov BX, 1   ; Deslocamento inicial X da nave Jet
-    mov DI, 319 ; Deslocamento inicial X da nave Alien           
+    mov DI, 291 ; Deslocamento inicial X da nave Alien           
     mov SI, 319 ; Deslocamento inicial X do Meteoro
     
     ; Loop do menu para selecionar entre jogar e sair
@@ -62,11 +62,11 @@ nao_pula_nave_jet:
     push AX
     mov AX, direcao_alien
     cmp AX, 0
-    pop AX
     jz direita
 
 esquerda:
-    add DI, 28
+    pop AX
+    add DI, 29
     inc DI
     mov DX, 120
     mov SI, OFFSET limpa_jet_v
@@ -77,7 +77,7 @@ esquerda:
     mov BX, DI
     call desenha_sprite
     
-    sub DI, 28
+    sub DI, 29
     push AX
     cmp DI, 0
     jnz nao_inverte_e
@@ -87,7 +87,7 @@ nao_inverte_e:
     pop AX
     
 nao_pula_nave_alien_e:
-    mov DX, 120                ; Deslocamento inicial Y
+    mov DX, 120               ; Deslocamento inicial Y
     mov SI, OFFSET nave_alien ; Carrega o offset da sprite em SI
     mov AX, nave_jet_linhas   ; Carrega em AX o numero de linhas 
     mov aux_linhas, AX        ; Carrega o numero de linhas da sprite em aux_linhas
@@ -97,8 +97,13 @@ nao_pula_nave_alien_e:
     call desenha_sprite
  
     dec DI
+    dec DI
+    
+    jmp segue_menu
     
 direita:
+    dec DI
+    pop AX
     mov DX, 120
     mov SI, OFFSET limpa_jet_v
     mov AX, limpa_jet_v_l
@@ -108,8 +113,9 @@ direita:
     mov BX, DI
     call desenha_sprite
     
+    inc DI
     push AX
-    cmp DI, 320
+    cmp DI, 290
     jnz nao_inverte_d
     mov AX, 1
     mov direcao_alien, AX
@@ -127,6 +133,8 @@ nao_pula_nave_alien_d:
     call desenha_sprite
 
     inc DI
+    
+segue_menu:
     
     ; -----------------------------------------------------------;
     pop BX
