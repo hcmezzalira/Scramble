@@ -25,23 +25,26 @@ espera_tecla endp
 
 ; Rotina para ler teclado sem parar o programa
 le_tecla proc
-
+    
+    ; Verifica tecla
     xor AX, AX
     mov AH, 01h
     int 16h
     jz sem_tecla
     
+    ; Caso alguma tecla for detectada
     mov AH, 00h
     int 16h
     ret
     
+    ; Caso nenhuma tecla for detectada
 sem_tecla:
     xor AX, AX
     ret
     
 le_tecla endp
 
-; Proc para inserir espera de 4 segundos
+; Proc para inserir espera de 4 segundos (Utilizado no inicio das fases)
 delay_4seg proc
 push AX
 push BX
@@ -55,10 +58,10 @@ push ES
     mov BX, ES:[006Ch]
     
     ; Calcula o tick final
-    add BX, DELAY_INICIO_FASE
+    add BX, DELAY_INICIO_FASE ; DELAY_INICIO_FASE = 73 ticks, referente a 4 segundos
     
-espera_loop:
     ;Compara tick atual com o tick final
+espera_loop:
     cmp ES:[006Ch], BX
     jl espera_loop
 
@@ -74,6 +77,7 @@ main:
     mov DS, AX
     mov ES, AX
     
+    ; Entra no menu
     call menu_loop
         
     mov AH, 4Ch

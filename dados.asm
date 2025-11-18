@@ -105,60 +105,6 @@
                   db 0,9,9,9,9,9,9,9,0,0,0,0,0,0,0,C,C,C,C,0,0,0,0,0,0,0,0,0,0
                   db 9,9,9,9,9,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
     
-    ; Numero de linhas da nave Jet
-    nave_jet_linhas equ 13
-    
-    ; Numero de colunas da nave Jet
-    nave_jet_colunas equ 29
-    
-    ; Posicao no eixo X da nave Jet
-    nave_jet_x    dw 0
-    
-    ; Posicao no eixo Y da nave Jet
-    nave_jet_y    dw 100
-    
-    ; Limpa nave Jet vertical
-    limpa_jet_v   db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-                  db 0
-    
-    ; Linhas da sprite que limpa a nave Jet 
-    limpa_jet_v_l equ 13
-    
-    ; Colunas da sprite que limpa a nave Jet
-    limpa_jet_v_c equ 1
-               
-    ; Limpa nave Jet horizontal
-    limpa_jet_h   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-
-    ; Linhas da sprite que limpa a nave Jet
-    limpa_jet_h_l equ 1
-    
-    ; Colunas da sprite que limpa a nave Jet
-    limpa_jet_h_c equ 29
-    
-    ;------------------------------------------------------------------;
-    ;------------------------Dados da Fase 1---------------------------;
-    ;------------------------------------------------------------------;
-    
-    ; Logo da Fase 1
-    fase1_logo    db "         _____                _ " , CR, LF
-                  db "        |  ___|_ _ ___  ___  / |" , CR, LF
-                  db "        | |_ / _` / __|/ _ \ | |" , CR, LF
-                  db "        |  _| (_| \__ \  __/ | |" , CR, LF
-                  db "        |_|  \__,_|___/\___| |_|"
-                  TAM_FASE1_LOGO equ $-fase1_logo
-                  
     nave_alien    db 0,0,0,0,0,0,0,2,2,2,2,2,2,2,A,E,E,E,E,E,E,E,0,0,0,0,0,0,0
                   db 0,0,0,0,0,0,0,2,2,2,2,2,2,2,A,E,E,E,E,E,E,E,0,0,0,0,0,0,0
                   db 0,0,0,0,2,2,2,2,2,A,E,E,E,E,E,E,E,E,E,E,E,E,E,E,E,0,0,0,0
@@ -172,6 +118,43 @@
                   db 0,0,0,0,0,0,5,5,D,2,2,A,E,E,5,5,D,E,E,E,E,0,0,0,0,0,0,0,0
                   db 0,0,0,0,0,0,0,0,0,0,0,2,2,2,A,E,E,E,0,0,0,0,0,0,0,0,0,0,0
                   db 0,0,0,0,0,0,0,0,0,0,0,2,2,2,A,E,E,E,0,0,0,0,0,0,0,0,0,0,0
+                  
+    ; Numero de linhas das sprites do menu (Nave Jet, Nave Alien e Meteoro)
+    sprites_menu_l equ 13
+    
+    ; Numero de colunas das sprites do menu (Nave Jet, Nave Alien e Meteoro)
+    sprites_menu_c equ 29
+    
+    ; Limpa sprites do menu (Nave Jet, Nave Alien e Meteoro)
+    limpa_sm_v   db 0
+                  db 0
+                  db 0
+                  db 0
+                  db 0
+                  db 0
+                  db 0
+                  db 0
+                  db 0
+                  db 0
+                  db 0
+                  db 0
+                  db 0
+               
+    ; Limpa sprites do menu (Nave Jet, Nave Alien e Meteoro)
+    limpa_sm_h   db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+    
+    ;------------------------------------------------------------------;
+    ;------------------------Dados da Fase 1---------------------------;
+    ;------------------------------------------------------------------;
+    
+    ; Logo da Fase 1
+    fase1_logo    db "         _____                _ " , CR, LF
+                  db "        |  ___|_ _ ___  ___  / |" , CR, LF
+                  db "        | |_ / _` / __|/ _ \ | |" , CR, LF
+                  db "        |  _| (_| \__ \  __/ | |" , CR, LF
+                  db "        |_|  \__,_|___/\___| |_|"
+                  TAM_FASE1_LOGO equ $-fase1_logo
+                  
                   
 ; Fim dados.asm
     

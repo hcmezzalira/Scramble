@@ -12,127 +12,124 @@ menu_loop proc
     int 10h
     
     ; Desenha logo do Scramble no menu
-    mov BP, OFFSET scramble_menu   
-    mov AH, 13h      
-    mov AL, 0h       
-    xor BH, BH       
-    mov BL, 0Ah     
-    mov CX, TAM_SCRAMBLE_MENU  
-    mov DH, 1        
-    mov DL, 0        
+    mov BP, OFFSET scramble_menu ; Move para BP o offset do Logo Scramble
+    xor AL, AL                   ; Zera AL
+    mov AH, 13h                  ; Move 13h para AH utilizado na interrupcao 
+    xor BH, BH                   ; Zera BH
+    mov BL, 0Ah                  ; Adiciona 0Ah (Cor verde claro) para o  BL
+    mov CX, TAM_SCRAMBLE_MENU    ; Move o tamanho do Logo Scramble para CX
+    mov DH, 1                    ; Deslocamento vertical
+    mov DL, 0                    ; Deslocamento horizontal
     int 10h  
     
     mov BX, 1   ; Deslocamento inicial X da nave Jet
     mov DI, 291 ; Deslocamento inicial X da nave Alien           
-    mov SI, 319 ; Deslocamento inicial X do Meteoro
+    mov SI, 291 ; Deslocamento inicial X do Meteoro
     
-    ; Loop do menu para selecionar entre jogar e sair
+    ; Loop do menu para selecionar entre jogar e sair e movimentar os sprites
 loop_menu:
-
+    
+    ; Movimentos das sprites
     ; ------------------ Nave Jet -------------------;
     
-    dec BX
-    mov DX, 60
-    mov SI, OFFSET limpa_jet_v
-    mov AX, limpa_jet_v_l
-    mov aux_linhas, AX
-    mov AX, limpa_jet_v_c
-    mov aux_colunas, AX
+    ; Limpa coluna
+    mov DX, 60                 ; Move 60 (posicao Y) para DX
+    mov SI, OFFSET limpa_sm_v  ; Move para SI o offset da sprite
+    mov AX, sprites_menu_l     ; Move para AX o numero de linhas da sprite utilizada para limpar
+    mov aux_linhas, AX         ; Move para aux_linhas o AX
+    mov AX, 1                  ; Move 1 (numero de colunas) para AX
+    mov aux_colunas, AX        ; Move para aux_colunas o AX
     call desenha_sprite
     
-    inc BX
-    cmp BX, 320               ; Compara com o utlimo pixel da horizontal 
-    jnz nao_pula_nave_jet     ; Se igual a zero, zera BX para reiniciar
-    mov BX, 0                 ; Deslocamento inicial X
+    ; Verificacao de ultima linha
+    inc BX                ; Incrementa BX para verificar o final da linha e desenhar a sprite na proxima coluna
+    cmp BX, 320           ; Compara com o utlimo pixel da horizontal 
+    jnz nao_pula_nave_jet ; Se igual a 320 (ultimo pixel da linha) continua, se diferente pula para o desenho da sprite
+    mov BX, 0             ; Volta o deslocamento inicial X para 0
     
+    ; Desenha Nave Jet
 nao_pula_nave_jet:
-    mov DX, 60               ; Deslocamento inicial Y
-    mov SI, OFFSET nave_jet   ; Carrega o offset da sprite em SI
-    mov AX, nave_jet_linhas   ; Carrega em AX o numero de linhas 
-    mov aux_linhas, AX        ; Carrega o numero de linhas da sprite em aux_linhas
-    mov AX, nave_jet_colunas  ; Carrega em AX o numero de colunas
-    mov aux_colunas, AX       ; Carrega o numero de colunas da sprite em aux_colunas
+    mov SI, OFFSET nave_jet ; Move para SI o offset da sprite
+    mov AX, sprites_menu_l  ; Move para AX o numero de linhas da sprite 
+    mov aux_linhas, AX      ; Move para aux_linhas o AX
+    mov AX, sprites_menu_c  ; Move para AX o numero de colunas da sprite
+    mov aux_colunas, AX     ; Move para aux_colunas o AX
     call desenha_sprite
     
+    push BX ; Salva na pilha a posicao da nave Jet
     
-    inc BX
-    
-    push BX
     ; ------------------ Nave Alien -------------------;
-    push AX
-    mov AX, direcao_alien
-    cmp AX, 0
-    jz direita
+    
+    mov AX, direcao_alien ; Move para AX a direcao da nave Alien
+    cmp AX, 0             ; Compara para verificar a direcao
+    jz direita            ; Se for igual a zero a nave esta indo para a direita, se for diferente a nave esta indo para esquerda
 
+    ; Desenhar nave indo da Direita para a Esquerda
 esquerda:
-    pop AX
-    add DI, 29
-    inc DI
-    mov DX, 120
-    mov SI, OFFSET limpa_jet_v
-    mov AX, limpa_jet_v_l
-    mov aux_linhas, AX
-    mov AX, limpa_jet_v_c
-    mov aux_colunas, AX
-    mov BX, DI
+    ; Limpa coluna
+    add DI, 28                ; Adiciona 29 (numero de colunas da sprite - 1) a DI (posicao X) para limpar a ultima coluna da sprite
+    mov DX, 120               ; Move 120 para DX (posicao Y)
+    mov SI, OFFSET limpa_sm_v ; Move para SI o offset da sprite
+    mov AX, sprites_menu_l    ; Move para AX o numero de linhas da sprite utilizada para limpar
+    mov aux_linhas, AX        ; Move para aux_linhas o AX
+    mov AX, 1                 ; Move para 1 (numero de colunas) para AX
+    mov aux_colunas, AX       ; Move para aux_colunas o AX
+    mov BX, DI                ; Move para BX o DI (posicao X)
     call desenha_sprite
     
-    sub DI, 29
-    push AX
-    cmp DI, 0
-    jnz nao_inverte_e
-    mov AX, 0
-    mov direcao_alien, AX
+    ; Verificacao de primeira linha
+    dec DI                ; Decrementa DI para verificar o inicio da linha e desenhar a sprite na proxima coluna
+    sub DI, 28            ; Subtrai 29 (numero de colunas da sprite - 1) para verificar o inicio da linha
+    cmp DI, 0             ; Compara para verificar se chegou ao inicio
+    jnz nao_inverte_e     ; Se igual a 0 inverte a direcao, se diferente pula e mantem a mesma direcao
+    mov AX, 0             ; Move 0 (0 = Direita para Esquerda) para AX
+    mov direcao_alien, AX ; Move AX para direcao_alien 
 nao_inverte_e:
-    pop AX
     
+    ; Desenha Nave Alien
 nao_pula_nave_alien_e:
-    mov DX, 120               ; Deslocamento inicial Y
-    mov SI, OFFSET nave_alien ; Carrega o offset da sprite em SI
-    mov AX, nave_jet_linhas   ; Carrega em AX o numero de linhas 
-    mov aux_linhas, AX        ; Carrega o numero de linhas da sprite em aux_linhas
-    mov AX, nave_jet_colunas  ; Carrega em AX o numero de colunas
-    mov aux_colunas, AX       ; Carrega o numero de colunas da sprite em aux_colunas
-    mov BX, DI
+    mov DX, 120               ; Move 120 para DX (posicao Y)
+    mov SI, OFFSET nave_alien ; Move para SI o offset da sprite
+    mov AX, sprites_menu_l    ; Move para AX o numero de linhas da sprite 
+    mov aux_linhas, AX        ; Move para aux_linhas o AX
+    mov AX, sprites_menu_c    ; Move para AX o numero de colunas da sprite
+    mov aux_colunas, AX       ; Move para aux_colunas o AX
+    mov BX, DI                ; Move para BX o DI (posicao X)
     call desenha_sprite
- 
-    dec DI
-    dec DI
-    
+
+    ; Pula para segue_menu
     jmp segue_menu
     
+    ; Desenhar nave indo da Esquerda para a Direita
 direita:
-    dec DI
-    pop AX
-    mov DX, 120
-    mov SI, OFFSET limpa_jet_v
-    mov AX, limpa_jet_v_l
-    mov aux_linhas, AX
-    mov AX, limpa_jet_v_c
-    mov aux_colunas, AX
-    mov BX, DI
+    ; Limpar coluna
+    mov DX, 120               ; Move 120 para DX (posicao Y)
+    mov SI, OFFSET limpa_sm_v ; Move para SI o offset da sprite
+    mov AX, sprites_menu_l    ; Move para AX o numero de linhas da sprite utilizada para limpar
+    mov aux_linhas, AX        ; Move para aux_linhas o AX
+    mov AX, 1                 ; Move para 1 (numero de colunas) para AX
+    mov aux_colunas, AX       ; Move para aux_colunas o AX
+    mov BX, DI                ; Move para BX o DI (posicao X)
     call desenha_sprite
     
-    inc DI
-    push AX
-    cmp DI, 290
-    jnz nao_inverte_d
-    mov AX, 1
-    mov direcao_alien, AX
+    inc DI                ; Incrementa DI para verificar o fimda linha e desenhar a sprite na proxima coluna
+    cmp DI, 290           ; Compara DI com 290 (ultima coluna valida antes de inverter direcao)
+    jnz nao_inverte_d     ; Se igual a 290 inverte a direcao, se diferente pula e mantem a mesma direcao
+    mov AX, 1             ; Move 1 (1 = Esquerda para Direita) para AX
+    mov direcao_alien, AX ; Move AX para direcao_alien
 nao_inverte_d:
-    pop AX
     
 nao_pula_nave_alien_d:
-    mov DX, 120                ; Deslocamento inicial Y
-    mov SI, OFFSET nave_alien ; Carrega o offset da sprite em SI
-    mov AX, nave_jet_linhas   ; Carrega em AX o numero de linhas 
-    mov aux_linhas, AX        ; Carrega o numero de linhas da sprite em aux_linhas
-    mov AX, nave_jet_colunas  ; Carrega em AX o numero de colunas
-    mov aux_colunas, AX       ; Carrega o numero de colunas da sprite em aux_colunas
-    mov BX, DI
+    mov DX, 120               ; Move 120 para DX (posicao Y)
+    mov SI, OFFSET nave_alien ; Move para SI o offset da sprite
+    mov AX, sprites_menu_l    ; Move para AX o numero de linhas da sprite  
+    mov aux_linhas, AX        ; Move para aux_linhas o AX
+    mov AX, sprites_menu_c    ; Move para AX o numero de colunas da sprite
+    mov aux_colunas, AX       ; Move para aux_colunas o AX
+    mov BX, DI                ; Move para BX o DI (posicao X)
     call desenha_sprite
 
-    inc DI
+    ; ------------------ Meteoro -------------------;
     
 segue_menu:
     
