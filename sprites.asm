@@ -6,10 +6,10 @@
 ; Desenha nave que representa as vidas
 ; Entradas:
 ; SI = offset do sprite
-; BP = numero de linhas
-; DI = numero de colunas
 ; DX = posicao vertical
 ; BX = posicao horizontal
+; aux_colunas = numero de colunas
+; aux_linhas = numero de linhas 
 desenha_sprite proc
 push AX
 push BX

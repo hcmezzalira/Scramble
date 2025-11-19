@@ -19,7 +19,7 @@ push SI
     mov CX, 5
     mov DI, OFFSET score_valor_s
     mov BX, 10
-    
+    add DI, 4
     
     ; Divisao por 10 para obter o resto da divisao
 loop_divisao:

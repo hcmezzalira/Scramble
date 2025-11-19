@@ -24,7 +24,6 @@ menu_loop proc
     
     mov BX, 1   ; Deslocamento inicial X da nave Jet
     mov DI, 291 ; Deslocamento inicial X da nave Alien           
-    mov SI, 291 ; Deslocamento inicial X do Meteoro
     
     mov AX, sprites_menu_l     ; Move para AX o numero de linhas das sprites do menu
     mov aux_linhas, AX         ; Move para aux_linhas o AX
@@ -125,30 +124,30 @@ segue_menu:
     ; ------------------ Meteoro -------------------;
     
     ; Limpa
-    mov DX, 100               ; posi??o vertical do meteoro
-    mov SI, OFFSET limpa_sm_v 
-    mov AX, 1                 ; limpa 1 coluna
-    mov aux_colunas, AX
-    mov BX, meteoro_menu_x
+    mov DX, 100               ; Move 100 para DX (posicao Y)
+    mov SI, OFFSET limpa_sm_v ; Move para SI o offset da sprite
+    mov AX, 1                 ; Move para 1 (numero de colunas) para AX
+    mov aux_colunas, AX       ; Move para aux_colunas o AX
+    mov BX, meteoro_menu_x    ; Move para BX o meteoro_menu_x (posicao X)
     call desenha_sprite
 
     ; Move meteoro (da direita para a esquerda)
-    dec meteoro_menu_x
-    mov AX, meteoro_menu_x
-    cmp AX, 0               ; quando a sprite saiu da tela
-    jnz meteoro_nao_reseta
-    mov meteoro_menu_x, 319 ; reaparece na direita
+    dec meteoro_menu_x      ; Decrementa meteoro_menu_x para verificar o inicio da linha e desenhar a sprite na proxima coluna
+    mov AX, meteoro_menu_x  ; Move meteoro_menu_x para AX
+    cmp AX, 0               ; Compara AX com 0 (inicio da linha)
+    jnz meteoro_nao_reseta  ; Se zero continua, se diferente pula pra meteoro_nao_reseta:
+    mov meteoro_menu_x, 319 ; Move 319 (fim da linha) para o meteoro_menu_x 
+    
 meteoro_nao_reseta:
-
     ; Desenha meteoro
-    mov BX, meteoro_menu_x
-    mov DX, 100               ; posi??o Y
-    mov SI, OFFSET meteoro    ; sprite do meteoro
-    mov AX, sprites_menu_c    ; 29 colunas
-    mov aux_colunas, AX
+    mov BX, meteoro_menu_x ; Move para BX o meteoro_menu_x (posicao X)
+    mov DX, 100            ; Move 100 para DX (posicao Y)
+    mov SI, OFFSET meteoro ; Move para SI o offset da sprite
+    mov AX, sprites_menu_c ; Move para AX o numero de colunas da sprite
+    mov aux_colunas, AX    ; Move para aux_colunas o AX
     call desenha_sprite
     
-    pop BX
+    pop BX ; Retorna o BX (utilizado para movimentacao nave jet
     
     ; -----------------------------------------------------------;
     
