@@ -320,7 +320,7 @@ desenha_superficie_fase1 proc
     ;-------------------------------------------
     mov ax, 180
     mov dx, 0
-    call calcula_posicao      ; DI agora está correto
+    call calcula_posicao 
 
     ;-------------------------------------------
     ; Configuração inicial da superfície
@@ -356,18 +356,18 @@ sup_ok:
     loop sup_coluna
 
     pop di
-    add di, 320                 ; próxima linha na VRAM
+    add di, 320                 ; próxima linha
     pop si
     add si, 490                 ; próxima linha do sprite
     pop cx
     loop sup_linha
 
     ;-------------------------------------------
-    ; Atualiza deslocamento global (velocidade)
+    ; Atualiza deslocamento (velocidade)
     ;-------------------------------------------
     mov ax, bp
-    add ax, 1                   ; <<< VELOCIDADE LENTA
-                                ; troque para 2, 3, 5, etc se quiser mais rápido
+    add ax, 1                   ; VELOCIDADE
+                                
     cmp ax, 490
     jb sup_scroll_ok
     xor ax, ax
