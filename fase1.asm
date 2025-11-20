@@ -95,7 +95,9 @@ push ES
     call desenha_sprite
     
     ; Loop fase 1
-atualiza_jogo_fase1:
+atualiza_jogo_fase1:     
+    ;chama superficie
+    call desenha_superficie_fase1
     
     ; Mostra o score no cabe?alho da fase
     call exibe_score
@@ -294,5 +296,115 @@ pop BX
 pop AX  
 ret
 fase1 endp
+
+;---------------------- superficie -------------------------------;
+desenha_superficie_fase1 proc
+    push ax
+    push bx
+    push cx
+    push dx
+    push si
+    push di
+    push ds
+    push es
+
+    mov ax, SEG _DATA
+    mov ds, ax
+
+    mov ax, 0A000h
+    mov es, ax
+
+    ;-------------------------------------------
+    ; Posição inicial da superfície na tela
+    ; (inferior da tela: Y = 180)
+    ;-------------------------------------------
+    mov ax, 180
+    mov dx, 0
+    call calcula_posicao      ; DI agora está correto
+
+    ;-------------------------------------------
+    ; Configuração inicial da superfície
+    ;-------------------------------------------
+    mov si, OFFSET fase1_superficie
+    mov bx, 490                 ; largura total da superfície
+    mov cx, 20                  ; altura total
+
+    mov bp, desloc_superficie   ; deslocamento horizontal
+
+sup_linha:
+    push cx
+    push si
+    push di
+
+    mov cx, 320                 ; largura visível (tela)
+    mov dx, bp                  ; deslocamento dentro da linha
+    add si, dx
+
+sup_coluna:
+    lodsb                       ; lê byte da superfície
+    stosb                       ; escreve no vídeo
+
+    inc dx
+    cmp dx, bx
+    jb sup_ok
+
+    ; loop horizontal (reinicia a linha)
+    sub dx, bx
+    sub si, bx
+
+sup_ok:
+    loop sup_coluna
+
+    pop di
+    add di, 320                 ; próxima linha na VRAM
+    pop si
+    add si, 490                 ; próxima linha do sprite
+    pop cx
+    loop sup_linha
+
+    ;-------------------------------------------
+    ; Atualiza deslocamento global (velocidade)
+    ;-------------------------------------------
+    mov ax, bp
+    add ax, 1                   ; <<< VELOCIDADE LENTA
+                                ; troque para 2, 3, 5, etc se quiser mais rápido
+    cmp ax, 490
+    jb sup_scroll_ok
+    xor ax, ax
+
+sup_scroll_ok:
+    mov desloc_superficie, ax
+
+    pop es
+    pop ds
+    pop di
+    pop si
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+desenha_superficie_fase1 endp
+;----------------------------------------------------------------
+calcula_posicao proc
+    ; Entrada:
+    ;   AX = Y
+    ;   DX = X
+    ; Saída:
+    ;   DI = posição na VRAM (A000:DI)
+
+    push ax
+    push dx
+
+    mov di, ax          ; DI = Y
+    shl di, 6           ; DI = Y * 64
+    shl ax, 8           ; AX = Y * 256
+    add di, ax          ; DI = Y * 320
+    add di, dx          ; DI = Y * 320 + X
+
+    pop dx
+    pop ax
+    ret
+calcula_posicao endp
 
 ; Fim fase1.asm
