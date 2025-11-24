@@ -12,15 +12,6 @@ push BP
 push DI
 push SI
 push ES
-
-; Limpa a tela Pixel por Pixel
-;cld
-;mov AX, 0A000h 
-;mov ES, AX 
-;xor DI, DI 
-;mov AL, 0 
-;mov CX, 320*200 
-;rep stosb
     
     ; Limpa a tela
     mov AL, 13h
@@ -30,7 +21,7 @@ push ES
     mov AX, SEG _DATA
     mov DS, AX
     mov ES, AX
-    
+
     ; Mostra o logo da Fase 1
     mov BP, OFFSET fase1_logo   
     mov AH, 13h      
@@ -50,6 +41,7 @@ push ES
     mov AH, 0
     int 10h
     
+    ; Parametros do timer
     mov AX, 0040h
     mov ES, AX
     mov AX, ES:[006Ch]
@@ -59,7 +51,7 @@ push ES
     mov AX, SEG _DATA
     mov DS, AX
     mov ES, AX
-    
+
     ; Mostra palavra score no cabe?alho da fase
     mov BP, OFFSET score   
     mov AH, 13h      
@@ -81,7 +73,8 @@ push ES
     mov DH, 0       
     mov DL, 32        
     int 10h
-    
+   
+    ;Desenha nave na posicao inicial
     mov jet_x, 10
     mov jet_y, 100
     
@@ -94,12 +87,39 @@ push ES
     mov DX, jet_y           ; Move para DX a posicao Y
     call desenha_sprite
     
-    ; Loop fase 1
-atualiza_jogo_fase1:     
-    ;chama superficie
-    call desenha_superficie_fase1
+    ; Pinta planeta azul (y >= 139)
+    mov AX, 0A000h
+    mov ES, AX
+
+    mov BX, 320      
+    mov SI, 139      
+
+pinta_linha_y:
+    mov AX, SI     
+    mul BX            
+    mov DI, AX         
+
+    mov CX, 320        
+    mov AL, 9    
+    cld                
+    rep stosb          
+
+    inc SI             
+    cmp SI, 200        
+    jl pinta_linha_y
     
-    ; Mostra o score no cabe?alho da fase
+    ; Loop fase 1
+atualiza_jogo_fase1:  
+    mov AX, SEG _DATA
+    mov DS, AX
+    mov ES, AX
+    
+    ; Calcula o timer
+    call calcula_timer
+    ; Exibe o timer
+    call exibe_timer
+    
+    ; Mostra o score
     call exibe_score
     
     ; Parametros para exibicao das vidas restantes
@@ -119,161 +139,13 @@ numero_vidas:
     add BX, 30              ; Espacamento entre as naves
     loop numero_vidas       ; Ate nao ter mais vidas decrementa CX
     
-    call calcula_timer
-    call exibe_timer
+    ; Desenha o mundo
+    call desenha_superficie_fase1
     
-    ; -------------------- Movimenta nave Jet ----------------------- ;
+    ; Movimenta a nave
+    call move_nave
     
-    call le_tecla
-        
-    ; Compara para verificar se foi pressionado seta para cima
-    cmp AH, 48h
-    jnz cmpesquerda1
-    jmp seta_cima1
-    
-cmpesquerda1:
-    ; Compara para verificar se foi pressionado seta para esquerda
-    cmp AH, 4Bh
-    jnz cmpbaixo1
-    jmp seta_esquerda1
-    
-cmpbaixo1:
-    ; Compara para verificar se foi pressionado seta para baixo
-    cmp AH, 50h
-    jnz cmpdireita1
-    jmp seta_baixo1
-
-cmpdireita1:   
-    ; Compara para verificar se foi pressionado seta para direita
-    cmp AH, 4Dh
-    jnz verificacao_fimfim
-    jmp seta_direita1
-    
-verificacao_fimfim:
-    jmp verificacao_fim1
-    
-seta_cima1:
-    mov AX, jet_y
-    cmp AX, 7
-    jnz cima1
-    jmp verificacao_fim1
-cima1:
-    
-    dec jet_y
-    
-    ; Limpar linha
-    mov DX, jet_y             
-    add DX, sprites_menu_l     
-    mov SI, OFFSET limpa_sm_h 
-    mov AX, sprites_menu_c    
-    mov aux_colunas, AX       
-    mov aux_linhas, 1         
-    mov BX, jet_x             
-    call desenha_sprite
-               
-    ; Desenha sprite 
-    sub DX, sprites_menu_l     
-    mov SI, OFFSET nave_jet 
-    mov AX, sprites_menu_c    
-    mov aux_colunas, AX      
-    mov AX, sprites_menu_l
-    mov aux_linhas, AX        
-    mov BX, jet_x             
-    call desenha_sprite
-
-    jmp verificacao_fim1
-    
-seta_baixo1:
-    mov AX, jet_y
-    cmp AX, 187
-    jnz baixo1
-    jmp verificacao_fim1
-    
-baixo1:
-    ; Limpar linha
-    mov DX, jet_y                  
-    mov SI, OFFSET limpa_sm_h 
-    mov AX, sprites_menu_c    
-    mov aux_colunas, AX       
-    mov aux_linhas, 1         
-    mov BX, jet_x             
-    call desenha_sprite
-    
-    ; Desenha sprite   
-    inc jet_y
-    mov DX, jet_y
-    mov SI, OFFSET nave_jet 
-    mov AX, sprites_menu_c    
-    mov aux_colunas, AX      
-    mov AX, sprites_menu_l
-    mov aux_linhas, AX        
-    mov BX, jet_x             
-    call desenha_sprite
-    
-    jmp verificacao_fim1
-    
-seta_esquerda1:
-    mov AX, jet_x
-    cmp AX, 0
-    jnz esquerda1
-    jmp verificacao_fim1
-    
-esquerda1:
-    ; Limpar linha
-    mov DX, jet_y   
-    mov SI, OFFSET limpa_sm_v 
-    mov AX, sprites_menu_l    
-    mov aux_linhas, AX       
-    mov aux_colunas, 1         
-    mov BX, jet_x   
-    add BX, sprites_menu_c
-    dec BX
-    call desenha_sprite
-    
-    ; Desenha sprite   
-    dec jet_x
-    mov DX, jet_y
-    mov SI, OFFSET nave_jet 
-    mov AX, sprites_menu_c    
-    mov aux_colunas, AX      
-    mov AX, sprites_menu_l
-    mov aux_linhas, AX        
-    mov BX, jet_x             
-    call desenha_sprite
-    
-    jmp verificacao_fim1
-    
-seta_direita1:
-    mov AX, jet_x
-    cmp AX, 291
-    jnz direita1
-    jmp verificacao_fim1
-    
-direita1:
-    ; Limpar linha
-    mov DX, jet_y   
-    mov SI, OFFSET limpa_sm_v 
-    mov AX, sprites_menu_l    
-    mov aux_linhas, AX       
-    mov aux_colunas, 1         
-    mov BX, jet_x   
-    call desenha_sprite
-    
-    ; Desenha sprite   
-    inc jet_x
-    mov DX, jet_y
-    mov SI, OFFSET nave_jet 
-    mov AX, sprites_menu_c    
-    mov aux_colunas, AX      
-    mov AX, sprites_menu_l
-    mov aux_linhas, AX        
-    mov BX, jet_x             
-    call desenha_sprite
-    
-    jmp verificacao_fim1
-    
-    ; -------------------- Verificacao fim de jogo ------------------ ;
-    
+    ; Verifica o fim do jogo (tempo e vidas)
 verificacao_fim1:
     mov AX, tempo_valor
     cmp AX, 0
@@ -285,7 +157,6 @@ verificacao_fim1:
     jmp atualiza_jogo_fase1
         
 fim_fase1:
-    
 pop ES
 pop SI
 pop DI
@@ -296,115 +167,5 @@ pop BX
 pop AX  
 ret
 fase1 endp
-
-;---------------------- superficie -------------------------------;
-desenha_superficie_fase1 proc
-    push ax
-    push bx
-    push cx
-    push dx
-    push si
-    push di
-    push ds
-    push es
-
-    mov ax, SEG _DATA
-    mov ds, ax
-
-    mov ax, 0A000h
-    mov es, ax
-
-    ;-------------------------------------------
-    ; Posição inicial da superfície na tela
-    ; (inferior da tela: Y = 180)
-    ;-------------------------------------------
-    mov ax, 180
-    mov dx, 0
-    call calcula_posicao 
-
-    ;-------------------------------------------
-    ; Configuração inicial da superfície
-    ;-------------------------------------------
-    mov si, OFFSET fase1_superficie
-    mov bx, 490                 ; largura total da superfície
-    mov cx, 20                  ; altura total
-
-    mov bp, desloc_superficie   ; deslocamento horizontal
-
-sup_linha:
-    push cx
-    push si
-    push di
-
-    mov cx, 320                 ; largura visível (tela)
-    mov dx, bp                  ; deslocamento dentro da linha
-    add si, dx
-
-sup_coluna:
-    lodsb                       ; lê byte da superfície
-    stosb                       ; escreve no vídeo
-
-    inc dx
-    cmp dx, bx
-    jb sup_ok
-
-    ; loop horizontal (reinicia a linha)
-    sub dx, bx
-    sub si, bx
-
-sup_ok:
-    loop sup_coluna
-
-    pop di
-    add di, 320                 ; próxima linha
-    pop si
-    add si, 490                 ; próxima linha do sprite
-    pop cx
-    loop sup_linha
-
-    ;-------------------------------------------
-    ; Atualiza deslocamento (velocidade)
-    ;-------------------------------------------
-    mov ax, bp
-    add ax, 1                   ; VELOCIDADE
-                                
-    cmp ax, 490
-    jb sup_scroll_ok
-    xor ax, ax
-
-sup_scroll_ok:
-    mov desloc_superficie, ax
-
-    pop es
-    pop ds
-    pop di
-    pop si
-    pop dx
-    pop cx
-    pop bx
-    pop ax
-    ret
-desenha_superficie_fase1 endp
-;----------------------------------------------------------------
-calcula_posicao proc
-    ; Entrada:
-    ;   AX = Y
-    ;   DX = X
-    ; Saída:
-    ;   DI = posição na VRAM (A000:DI)
-
-    push ax
-    push dx
-
-    mov di, ax          ; DI = Y
-    shl di, 6           ; DI = Y * 64
-    shl ax, 8           ; AX = Y * 256
-    add di, ax          ; DI = Y * 320
-    add di, dx          ; DI = Y * 320 + X
-
-    pop dx
-    pop ax
-    ret
-calcula_posicao endp
 
 ; Fim fase1.asm

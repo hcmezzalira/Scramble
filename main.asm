@@ -9,12 +9,12 @@ include dados.asm
 .code
 
 ; Arquivos de codigo utilizados
-include aux.asm
 include tempo.asm
 include score.asm
 include menu.asm
 include fase1.asm
 include sprites.asm
+include auxiliar.asm
 
 ; Rotina para aguardar teclado parando o programa (Utilizada para verificar codigo)
 espera_tecla proc

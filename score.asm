@@ -47,6 +47,7 @@ score_to_ascii endp
 exibe_score proc
 push AX
 push CX
+push DX
 push BP
     
     ; Transforma o inteiro em caracter
@@ -64,6 +65,7 @@ push BP
     int 10h
     
 pop BP
+pop DX
 pop CX
 pop AX
 ret
