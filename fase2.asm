@@ -13,7 +13,9 @@ push DI
 push SI
 push ES
     
+    ; Reseta o timer para 60 segundos
     mov tempo_valor, 60
+    ; Altera fase para 2 (utilizado na soma dos pontos de sobrevivencia)
     mov fase, 2
 
     ; Limpa a tela
@@ -36,7 +38,7 @@ push ES
     mov DL, 0        
     int 10h
     
-    ;Delay de 4 segundos
+    ;Delay de 4 segundos inicio da fase
     call delay_4seg
     
     ; Limpa a tela
@@ -90,29 +92,29 @@ push ES
     mov DX, jet_y           ; Move para DX a posicao Y
     call desenha_sprite
     
-    ; Pinta planeta azul (y >= 139)
+    ; Preenche fundo do planeta cor azul (y >= 139)
     mov AX, 0A000h
     mov ES, AX
 
-    mov BX, 320      
-    mov SI, 139      
+    mov BX, 320 ; Numero de pixels eixo X
+    mov SI, 139 ; Altura inicial
 
 pinta_linha_y2:
-    mov AX, SI     
-    mul BX            
-    mov DI, AX         
+    mov AX, SI
+    mul BX
+    mov DI, AX
 
-    mov CX, 320        
-    mov AL, 9    
-    cld                
-    rep stosb          
+    mov CX, 320
+    mov AL, 6   ; Cor
+    cld
+    rep stosb
 
-    inc SI             
-    cmp SI, 200        
+    inc SI
+    cmp SI, 200
     jl pinta_linha_y2
     
     ; Loop fase 2
-atualiza_jogo_fase2:  
+atualiza_jogo_fase2:
     mov AX, SEG _DATA
     mov DS, AX
     mov ES, AX

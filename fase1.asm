@@ -13,6 +13,7 @@ push DI
 push SI
 push ES
     
+    ; Altera fase para 1 (utilizado na soma dos pontos de sobrevivencia)
     mov fase, 1
 
     ; Limpa a tela
@@ -35,7 +36,7 @@ push ES
     mov DL, 0        
     int 10h
     
-    ; Delay de 4 segundos
+    ; Delay de 4 segundos inicio da fase 
     call delay_4seg
     
     ; Limpa a tela
@@ -54,7 +55,7 @@ push ES
     mov DS, AX
     mov ES, AX
 
-    ; Mostra palavra score no cabe?alho da fase
+    ; Mostra palavra score no cabecalho da fase
     mov BP, OFFSET score   
     mov AH, 13h      
     mov AL, 0h       
@@ -76,10 +77,35 @@ push ES
     mov DL, 32        
     int 10h
    
-    ;Desenha nave na posicao inicial
+    ; Desenha nave na posicao inicial
     mov jet_x, 10
     mov jet_y, 100
     
+    ; Preenche fundo do planeta cor azul (y >= 139)
+    mov AX, 0A000h
+    mov ES, AX
+
+    mov BX, 320 ; Numero de pixels eixo x
+    mov SI, 139 ; Altura inicial 
+
+pinta_linha_y1:
+    mov AX, SI     
+    mul BX            
+    mov DI, AX         
+
+    mov CX, 320        
+    mov AL, 9   ; Cor 
+    cld                
+    rep stosb          
+
+    inc SI             
+    cmp SI, 200        
+    jl pinta_linha_y1
+    
+    ; Mostra as vidas
+    call desenha_vidas
+    
+    ; Desenha nave jet posicao inicial
     mov SI, OFFSET nave_jet ; Move para SI o offset da sprite
     mov AX, sprites_menu_c  ; Move para AX o numero de colunas da sprite
     mov aux_colunas, AX     ; Move para aux_colunas o AX
@@ -88,27 +114,6 @@ push ES
     mov BX, jet_x           ; Move para BX a posicao X
     mov DX, jet_y           ; Move para DX a posicao Y
     call desenha_sprite
-    
-    ; Pinta planeta azul (y >= 139)
-    mov AX, 0A000h
-    mov ES, AX
-
-    mov BX, 320      
-    mov SI, 139      
-
-pinta_linha_y1:
-    mov AX, SI     
-    mul BX            
-    mov DI, AX         
-
-    mov CX, 320        
-    mov AL, 9    
-    cld                
-    rep stosb          
-
-    inc SI             
-    cmp SI, 200        
-    jl pinta_linha_y1
     
     ; Loop fase 1
 atualiza_jogo_fase1:  
@@ -124,24 +129,24 @@ atualiza_jogo_fase1:
     ; Mostra o score
     call exibe_score
     
-    ; Mostra as vidas
-    call desenha_vidas
-    
-    ; Desenha nave jet novamente (Teste)
-    mov SI, OFFSET nave_jet ; Move para SI o offset da sprite
-    mov AX, sprites_menu_c  ; Move para AX o numero de colunas da sprite
-    mov aux_colunas, AX     ; Move para aux_colunas o AX
-    mov AX, sprites_menu_l  ; Move para AX o numero de linhas da sprite
-    mov aux_linhas, AX      ; Move para aux_linhas o AX
-    mov BX, jet_x           ; Move para BX a posicao X
-    mov DX, jet_y           ; Move para DX a posicao Y
-    call desenha_sprite
-    
     ; Desenha o mundo
     call desenha_superficie_fase1
     
     ; Movimenta a nave
     call move_nave
+    
+    call le_tecla
+    
+    cmp AH, ' '
+    jnz sem_tiro
+    cmp tiro1y, 0
+    
+    
+    
+    
+    
+tiro1_livre:
+sem_tiro:
     
     ; Verifica o fim do jogo (tempo e vidas)
 verificacao_fim1:
@@ -149,11 +154,13 @@ verificacao_fim1:
     cmp AL, 0
     jz fim_fase1
     
+    ; Verifica se o tempo acabou e passa para proxima fase
     mov AX, tempo_valor
     cmp AX, 0
     jnz cont_fase1
     call fase2
     jmp fim_fase1
+    
 cont_fase1:
     jmp atualiza_jogo_fase1
         

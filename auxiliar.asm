@@ -226,7 +226,14 @@ desenha_superficie_fase1 proc
     ;-------------------------------------------
     ; Configura????o inicial da superf??cie
     ;-------------------------------------------
+    cmp fase, 1
+    jz mundo_fase1
+    mov si, OFFSET fase2_superficie
+    jmp mundo_fase2
+mundo_fase1:
     mov si, OFFSET fase1_superficie
+mundo_fase2:
+    
     mov bx, 490                 ; largura total da superf??cie
     mov cx, 20                  ; altura total
 
