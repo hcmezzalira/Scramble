@@ -32,8 +32,23 @@ push ES
     dec CX               ; Diminui um segundo do timer
     mov tempo_valor, CX  ; Armazena em tempo_valor o tempo restante
     
-fim_timer:
+    cmp fase, 1
+    jnz cmpfase2
+    add score_valor, 10
+    jmp fim_timer
     
+cmpfase2:
+    cmp fase, 2
+    jnz cmpfase3
+    add score_valor, 15
+    jmp fim_timer
+    
+cmpfase3:
+    cmp fase, 3
+    jnz fim_timer
+    add score_valor, 20
+    
+fim_timer:
 pop ES
 pop DX
 pop CX

@@ -1,9 +1,9 @@
-; Inicio fase1.asm
+; Inicio fase2.asm
     ;------------------------------------------------------------------;
-    ;--------------------Rotinas referente a Fase 1--------------------;
+    ;--------------------Rotinas referente a Fase 2--------------------;
     ;------------------------------------------------------------------;
 
-fase1 proc
+fase2 proc
 push AX
 push BX
 push CX
@@ -13,7 +13,8 @@ push DI
 push SI
 push ES
     
-    mov fase, 1
+    mov tempo_valor, 60
+    mov fase, 2
 
     ; Limpa a tela
     mov AL, 13h
@@ -24,18 +25,18 @@ push ES
     mov DS, AX
     mov ES, AX
 
-    ; Mostra o logo da Fase 1
-    mov BP, OFFSET fase1_logo   
+    ; Mostra o logo da Fase 2
+    mov BP, OFFSET fase2_logo   
     mov AH, 13h      
     mov AL, 0h       
     xor BH, BH       
     mov BL, 04h     
-    mov CX, TAM_FASE1_LOGO  
+    mov CX, TAM_FASE2_LOGO  
     mov DH, 9       
     mov DL, 0        
     int 10h
     
-    ; Delay de 4 segundos
+    ;Delay de 4 segundos
     call delay_4seg
     
     ; Limpa a tela
@@ -96,7 +97,7 @@ push ES
     mov BX, 320      
     mov SI, 139      
 
-pinta_linha_y1:
+pinta_linha_y2:
     mov AX, SI     
     mul BX            
     mov DI, AX         
@@ -108,10 +109,10 @@ pinta_linha_y1:
 
     inc SI             
     cmp SI, 200        
-    jl pinta_linha_y1
+    jl pinta_linha_y2
     
-    ; Loop fase 1
-atualiza_jogo_fase1:  
+    ; Loop fase 2
+atualiza_jogo_fase2:  
     mov AX, SEG _DATA
     mov DS, AX
     mov ES, AX
@@ -144,20 +145,20 @@ atualiza_jogo_fase1:
     call move_nave
     
     ; Verifica o fim do jogo (tempo e vidas)
-verificacao_fim1:
+verificacao_fim2:
     mov AL, vidas
     cmp AL, 0
-    jz fim_fase1
+    jz fim_fase2
     
     mov AX, tempo_valor
     cmp AX, 0
-    jnz cont_fase1
-    call fase2
-    jmp fim_fase1
-cont_fase1:
-    jmp atualiza_jogo_fase1
+    jnz cont_fase2
+    call fase3
+    jmp fim_fase2
+cont_fase2:
+    jmp atualiza_jogo_fase2
         
-fim_fase1:
+fim_fase2:
 pop ES
 pop SI
 pop DI
@@ -167,6 +168,6 @@ pop CX
 pop BX
 pop AX  
 ret
-fase1 endp
+fase2 endp
 
-; Fim fase1.asm
+; Fim fase2.asm

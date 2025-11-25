@@ -211,6 +211,24 @@ opcao_selecionada:
 jogar_opcao:
     call fase1
     
+    ; Limpa a tela
+    mov AL, 13h
+    mov AH, 0
+    int 10h
+    
+    ; Desenha logo do Scramble no menu
+    mov BP, OFFSET scramble_menu ; Move para BP o offset do Logo Scramble
+    xor AL, AL                   ; Zera AL
+    mov AH, 13h                  ; Move 13h para AH utilizado na interrupcao 
+    xor BH, BH                   ; Zera BH
+    mov BL, 0Ah                  ; Adiciona 0Ah (Cor verde claro) para o  BL
+    mov CX, TAM_SCRAMBLE_MENU    ; Move o tamanho do Logo Scramble para CX
+    mov DH, 1                    ; Deslocamento vertical
+    mov DL, 0                    ; Deslocamento horizontal
+    int 10h  
+    
+    jmp loop_menu
+    
 menu_loop endp
 
 ; Proc para alterar a cor do Jogar e Sair no menu

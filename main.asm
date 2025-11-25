@@ -13,6 +13,8 @@ include tempo.asm
 include score.asm
 include menu.asm
 include fase1.asm
+include fase2.asm
+include fase3.asm
 include sprites.asm
 include auxiliar.asm
 

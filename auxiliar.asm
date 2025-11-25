@@ -41,14 +41,14 @@ cmpdireita1:
     
     ; Retorna
 verificacao_fimfim:
-    jmp verificacao_fim1
+    jmp move_fim
     
     ; Se seta cima pressionada (decrementa y)
 seta_cima1:
     mov AX, jet_y
     cmp AX, 7
     jnz cima1
-    jmp verificacao_fim1
+    jmp move_fim
 cima1:
     
     dec jet_y
@@ -73,14 +73,14 @@ cima1:
     mov BX, jet_x             
     call desenha_sprite
 
-    jmp verificacao_fim1
+    jmp move_fim
     
     ; Se seta baixo pressionada (incrementa y)
 seta_baixo1:
     mov AX, jet_y
     cmp AX, 187
     jnz baixo1
-    jmp verificacao_fim1
+    jmp move_fim
     
 baixo1:
     ; Limpar linha
@@ -103,14 +103,14 @@ baixo1:
     mov BX, jet_x             
     call desenha_sprite
     
-    jmp verificacao_fim1
+    jmp move_fim
     
     ; Se seta esquerda pressionada (decrementa x)
 seta_esquerda1:
     mov AX, jet_x
     cmp AX, 0
     jnz esquerda1
-    jmp verificacao_fim1
+    jmp move_fim
     
 esquerda1:
     ; Limpar linha
@@ -135,14 +135,14 @@ esquerda1:
     mov BX, jet_x             
     call desenha_sprite
     
-    jmp verificacao_fim1
+    jmp move_fim
     
     ; Se seta direita pressionada (incrementa X)
 seta_direita1:
     mov AX, jet_x
     cmp AX, 291
     jnz direita1
-    jmp verificacao_fim1
+    jmp move_fim
     
 direita1:
     ; Limpar linha
@@ -164,8 +164,9 @@ direita1:
     mov aux_linhas, AX        
     mov BX, jet_x             
     call desenha_sprite
-    jmp verificacao_fim1
-
+    ;jmp verificacao_fim1
+    
+move_fim:
 pop ES
 pop SI
 pop DI
@@ -174,6 +175,7 @@ pop DX
 pop CX
 pop BX
 pop AX 
+ret
 move_nave endp
 
 calcula_posicao proc
@@ -284,5 +286,25 @@ sup_scroll_ok:
     pop ax
     ret
 desenha_superficie_fase1 endp
+
+desenha_vidas proc
+    ; Parametros para exibicao das vidas restantes
+    mov BX, 130                ; Deslocamento inicial X
+    mov DX, 0                  ; Deslocamento inicial Y
+    mov SI, OFFSET nave_vidas  ; Carrega o offset da sprite em SI
+    mov AX, nave_vidas_linhas  ; Carrega em AX o numero de linhas 
+    mov aux_linhas, AX         ; Carrega o numero de linhas da sprite em aux_linhas
+    mov AX, nave_vidas_colunas ; Carrega em AX o numero de colunas
+    mov aux_colunas, AX        ; Carrega o numero de colunas da sprite em aux_colunas
+    
+    xor AX, AX                ; Zera AX
+    mov AL, vidas             ; Carrega em AL o numero de vidas
+    mov CX, AX                ; Carrega em CX o numero de vidas para o loop 
+numero_vidas:
+    call desenha_sprite ; Desenha a nave da vida (Entrada BX: Deslocamento)
+    add BX, 30              ; Espacamento entre as naves
+    loop numero_vidas       ; Ate nao ter mais vidas decrementa CX
+ret
+desenha_vidas endp
     
 ; Fim auxiliar.asm
