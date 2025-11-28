@@ -15,6 +15,7 @@ push ES
     
     ; Altera fase para 1 (utilizado na soma dos pontos de sobrevivencia)
     mov fase, 1
+    mov tempo_valor, tempo_fases
 
     ; Limpa a tela
     mov AL, 13h
@@ -30,7 +31,7 @@ push ES
     mov AH, 13h      
     mov AL, 0h       
     xor BH, BH       
-    mov BL, 04h     
+    mov BL, 0Eh     
     mov CX, TAM_FASE1_LOGO  
     mov DH, 9       
     mov DL, 0        
@@ -135,18 +136,68 @@ atualiza_jogo_fase1:
     ; Movimenta a nave
     call move_nave
     
+    ;--------------------Tiros---------------------;
+    
+    ;-------Atira (se disponivel)--------;
+    
+    mov AX, 0A000h
+    mov ES, AX
+    
     call le_tecla
-    
-    cmp AH, ' '
+    cmp AL, LF
     jnz sem_tiro
+    
     cmp tiro1y, 0
+    jnz tiro1_ativo
     
+    mov AX, jet_x
+    mov tiro1x, AX
+    add tiro1x, 31
     
+    mov AX, jet_y
+    mov tiro1y, AX
+    add tiro1y, 6
     
+tiro1_ativo:
     
+    cmp tiro2y, 0
+    jnz sem_tiro
     
-tiro1_livre:
+    mov AX, jet_x
+    mov tiro2x, AX
+    add tiro2x, 31
+    
+    mov AX, jet_y
+    mov tiro2y, AX
+    add tiro2y, 6
+    
 sem_tiro:
+    
+    ; Movimenta tiro
+    
+    cmp tiro1y, 0
+    jz sem_tiro1
+    
+    mov AX, tiro1y
+    mov DX, tiro1x
+    call calcula_posicao
+    ;mov ES:[DI], 0
+    
+    add tiro1x, 2
+    mov DX, tiro1x
+    mov AX, tiro1y
+    
+    call calcula_posicao
+    
+    mov ES:[DI], 0Fh
+    
+    cmp tiro1x, 320
+    jl sem_tiro1
+    mov tiro1y , 0
+    
+sem_tiro1:
+    
+    ;------------Verificacao Fim Fase-----------;
     
     ; Verifica o fim do jogo (tempo e vidas)
 verificacao_fim1:

@@ -26,6 +26,8 @@ ret
 espera_tecla endp
 
 ; Rotina para ler teclado sem parar o programa
+; Saida: 
+;       AH = Tecla pressionada
 le_tecla proc
     
     ; Verifica tecla
@@ -46,7 +48,7 @@ sem_tecla:
     
 le_tecla endp
 
-; Proc para inserir espera de 4 segundos (Utilizado no inicio das fases)
+; Proc para inserir espera no inicio das fases
 delay_4seg proc
 push AX
 push BX

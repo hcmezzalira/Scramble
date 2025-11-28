@@ -13,8 +13,8 @@ push DI
 push SI
 push ES
     
-    ; Reseta o timer para 60 segundos
-    mov tempo_valor, 60
+    ; Reseta o timer
+    mov tempo_valor, tempo_fases
     ; Altera fase para 2 (utilizado na soma dos pontos de sobrevivencia)
     mov fase, 2
 
@@ -32,7 +32,7 @@ push ES
     mov AH, 13h      
     mov AL, 0h       
     xor BH, BH       
-    mov BL, 04h     
+    mov BL, 06h     
     mov CX, TAM_FASE2_LOGO  
     mov DH, 9       
     mov DL, 0        

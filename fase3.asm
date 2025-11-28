@@ -13,7 +13,7 @@ push DI
 push SI
 push ES
     
-    mov tempo_valor, 60
+    mov tempo_valor, tempo_fases
     mov fase, 3
 
     ; Limpa a tela
