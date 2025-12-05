@@ -103,9 +103,6 @@ pinta_linha_y1:
     cmp SI, 200        
     jl pinta_linha_y1
     
-    ; Mostra as vidas
-    call desenha_vidas
-    
     ; Desenha nave jet posicao inicial
     mov SI, OFFSET nave_jet ; Move para SI o offset da sprite
     mov AX, sprites_menu_c  ; Move para AX o numero de colunas da sprite
@@ -129,6 +126,9 @@ atualiza_jogo_fase1:
     
     ; Mostra o score
     call exibe_score
+    
+    ; Mostra as vidas
+    call desenha_vidas
     
     ; Desenha o mundo
     call desenha_superficie_fase1

@@ -79,7 +79,7 @@ push ES
    
     ;Desenha nave na posicao inicial
     mov jet_x, 10
-    mov jet_y, 100
+    mov jet_y, 60
     
     mov SI, OFFSET nave_jet ; Move para SI o offset da sprite
     mov AX, sprites_menu_c  ; Move para AX o numero de colunas da sprite
@@ -89,27 +89,6 @@ push ES
     mov BX, jet_x           ; Move para BX a posicao X
     mov DX, jet_y           ; Move para DX a posicao Y
     call desenha_sprite
-    
-    ; Pinta planeta azul (y >= 139)
-    mov AX, 0A000h
-    mov ES, AX
-
-    mov BX, 320      
-    mov SI, 139      
-
-pinta_linha_y3:
-    mov AX, SI     
-    mul BX            
-    mov DI, AX         
-
-    mov CX, 320        
-    mov AL, 9    
-    cld                
-    rep stosb          
-
-    inc SI             
-    cmp SI, 200        
-    jl pinta_linha_y3
     
     ; Loop fase 3
 atualiza_jogo_fase3:  
@@ -139,7 +118,7 @@ atualiza_jogo_fase3:
     call desenha_sprite
     
     ; Desenha o mundo
-    call desenha_superficie_fase1
+    call desenha_superficie_fase3
     
     ; Movimenta a nave
     call move_nave

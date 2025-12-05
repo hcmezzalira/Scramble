@@ -294,6 +294,96 @@ sup_scroll_ok:
     ret
 desenha_superficie_fase1 endp
 
+desenha_superficie_fase3 proc
+    push ax
+    push bx
+    push cx
+    push dx
+    push si
+    push di
+    push ds
+    push es
+
+    mov ax, SEG _DATA
+    mov ds, ax
+
+    mov ax, 0A000h
+    mov es, ax
+
+    ;-------------------------------------------
+    ; Posi????o inicial da superf??cie na tela
+    ; (inferior da tela: Y = 87)
+    ;-------------------------------------------
+    mov ax, 87
+    mov dx, 0
+    call calcula_posicao 
+
+    ;-------------------------------------------
+    ; Configura????o inicial da superf??cie
+    ;-------------------------------------------
+
+    mov si, OFFSET fase3_superficie
+    
+    mov bx, 480                 ; largura total da superf??cie
+    mov cx, 112                 ; altura total
+
+    mov bp, desloc_superficie   ; deslocamento horizontal
+
+sup_linha3:
+    push cx
+    push si
+    push di
+
+    mov cx, 320                 ; largura vis??vel (tela)
+    mov dx, bp                  ; deslocamento dentro da linha
+    add si, dx
+
+sup_coluna3:
+    lodsb                       ; l?? byte da superf??cie
+    stosb                       ; escreve no v??deo
+
+    inc dx
+    cmp dx, bx
+    jb sup_ok3
+
+    ; loop horizontal (reinicia a linha)
+    sub dx, bx
+    sub si, bx
+
+sup_ok3:
+    loop sup_coluna3
+
+    pop di
+    add di, 320                 ; pr??xima linha
+    pop si
+    add si, 480                 ; pr??xima linha do sprite
+    pop cx
+    loop sup_linha3
+
+    ;-------------------------------------------
+    ; Atualiza deslocamento (velocidade)
+    ;-------------------------------------------
+    mov ax, bp
+    add ax, 1                   ; VELOCIDADE
+                                
+    cmp ax, 480
+    jb sup_scroll_ok3
+    xor ax, ax
+
+sup_scroll_ok3:
+    mov desloc_superficie, ax
+
+    pop es
+    pop ds
+    pop di
+    pop si
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+desenha_superficie_fase3 endp
+
 desenha_vidas proc
     ; Parametros para exibicao das vidas restantes
     mov BX, 130                ; Deslocamento inicial X

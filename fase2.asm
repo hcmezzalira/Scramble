@@ -78,19 +78,6 @@ push ES
     mov DH, 0       
     mov DL, 32        
     int 10h
-   
-    ;Desenha nave na posicao inicial
-    mov jet_x, 10
-    mov jet_y, 100
-    
-    mov SI, OFFSET nave_jet ; Move para SI o offset da sprite
-    mov AX, sprites_menu_c  ; Move para AX o numero de colunas da sprite
-    mov aux_colunas, AX     ; Move para aux_colunas o AX
-    mov AX, sprites_menu_l  ; Move para AX o numero de linhas da sprite
-    mov aux_linhas, AX      ; Move para aux_linhas o AX
-    mov BX, jet_x           ; Move para BX a posicao X
-    mov DX, jet_y           ; Move para DX a posicao Y
-    call desenha_sprite
     
     ; Preenche fundo do planeta cor azul (y >= 139)
     mov AX, 0A000h
@@ -113,6 +100,19 @@ pinta_linha_y2:
     cmp SI, 200
     jl pinta_linha_y2
     
+    ;Desenha nave na posicao inicial
+    mov jet_x, 10
+    mov jet_y, 100
+    
+    mov SI, OFFSET nave_jet ; Move para SI o offset da sprite
+    mov AX, sprites_menu_c  ; Move para AX o numero de colunas da sprite
+    mov aux_colunas, AX     ; Move para aux_colunas o AX
+    mov AX, sprites_menu_l  ; Move para AX o numero de linhas da sprite
+    mov aux_linhas, AX      ; Move para aux_linhas o AX
+    mov BX, jet_x           ; Move para BX a posicao X
+    mov DX, jet_y           ; Move para DX a posicao Y
+    call desenha_sprite
+    
     ; Loop fase 2
 atualiza_jogo_fase2:
     mov AX, SEG _DATA
@@ -129,16 +129,6 @@ atualiza_jogo_fase2:
     
     ; Mostra as vidas
     call desenha_vidas
-    
-    ; Desenha nave jet novamente (Teste)
-    mov SI, OFFSET nave_jet ; Move para SI o offset da sprite
-    mov AX, sprites_menu_c  ; Move para AX o numero de colunas da sprite
-    mov aux_colunas, AX     ; Move para aux_colunas o AX
-    mov AX, sprites_menu_l  ; Move para AX o numero de linhas da sprite
-    mov aux_linhas, AX      ; Move para aux_linhas o AX
-    mov BX, jet_x           ; Move para BX a posicao X
-    mov DX, jet_y           ; Move para DX a posicao Y
-    call desenha_sprite
     
     ; Desenha o mundo
     call desenha_superficie_fase1
