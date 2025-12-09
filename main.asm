@@ -17,6 +17,7 @@ include fase2.asm
 include fase3.asm
 include sprites.asm
 include auxiliar.asm
+include inimigos.asm
 
 ; Rotina para aguardar teclado parando o programa (Utilizada para verificar codigo)
 espera_tecla proc

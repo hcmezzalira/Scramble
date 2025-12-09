@@ -54,7 +54,7 @@ nao_pula_nave_jet:
     mov aux_colunas, AX     ; Move para aux_colunas o AX
     call desenha_sprite
     
-    push BX ; Salva na pilha a posicao da nave Jet
+push BX ; Salva na pilha a posicao da nave Jet
     
     ; ------------------ Nave Alien -------------------;
     
@@ -147,21 +147,21 @@ meteoro_nao_reseta:
     mov aux_colunas, AX    ; Move para aux_colunas o AX
     call desenha_sprite
     
-    pop BX ; Retorna o BX (utilizado para movimentacao nave jet
+pop BX ; Retorna o BX (utilizado para movimentacao nave jet
     
     ; -----------------------------------------------------------;
     
     ; Delay para as sprites do menu
-    push AX
-    push CX
-    push DX
+push AX
+push CX
+push DX
     mov AH, 86h
     mov CX, delay_b
     mov DX, delay_a
     int 15h
-    pop DX
-    pop CX
-    pop AX
+pop DX
+pop CX
+pop AX
     
     call menu_cor
     call le_tecla

@@ -87,7 +87,7 @@ pop DX
 pop CX
 pop BX
 pop AX
-ret    
+ret
 timer_to_ascii endp
 
 ; Rotina para exibir o tempo (ASCII)
@@ -100,13 +100,13 @@ push BP
     
     ; Mostra o tempo
     mov BP, OFFSET tempo_valor_s
-    mov AH, 13h                 
-    mov AL, 0h                  
-    xor BH, BH                  
-    mov BL, 0Ah                 
-    mov CX, TAM_TEMPO_VALOR_S  
-    mov DH, 00                   
-    mov DL, 38                   
+    mov AH, 13h
+    mov AL, 0h
+    xor BH, BH
+    mov BL, 0Ah
+    mov CX, TAM_TEMPO_VALOR_S
+    mov DH, 00
+    mov DL, 38
     int 10h
     
 pop BP

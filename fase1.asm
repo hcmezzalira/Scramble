@@ -38,7 +38,7 @@ push ES
     int 10h
     
     ; Delay de 4 segundos inicio da fase 
-    call delay_4seg
+    ;call delay_4seg
     
     ; Limpa a tela
     mov AL, 13h
@@ -136,66 +136,11 @@ atualiza_jogo_fase1:
     ; Movimenta a nave
     call move_nave
     
-    ;--------------------Tiros---------------------;
+    call cria_inimigo
     
-    ;-------Atira (se disponivel)--------;
+    call atualiza_inimigos
     
-    mov AX, 0A000h
-    mov ES, AX
-    
-    call le_tecla
-    cmp AL, LF
-    jnz sem_tiro
-    
-    cmp tiro1y, 0
-    jnz tiro1_ativo
-    
-    mov AX, jet_x
-    mov tiro1x, AX
-    add tiro1x, 31
-    
-    mov AX, jet_y
-    mov tiro1y, AX
-    add tiro1y, 6
-    
-tiro1_ativo:
-    
-    cmp tiro2y, 0
-    jnz sem_tiro
-    
-    mov AX, jet_x
-    mov tiro2x, AX
-    add tiro2x, 31
-    
-    mov AX, jet_y
-    mov tiro2y, AX
-    add tiro2y, 6
-    
-sem_tiro:
-    
-    ; Movimenta tiro
-    
-    cmp tiro1y, 0
-    jz sem_tiro1
-    
-    mov AX, tiro1y
-    mov DX, tiro1x
-    call calcula_posicao
-    ;mov ES:[DI], 0
-    
-    add tiro1x, 2
-    mov DX, tiro1x
-    mov AX, tiro1y
-    
-    call calcula_posicao
-    
-    mov ES:[DI], 0Fh
-    
-    cmp tiro1x, 320
-    jl sem_tiro1
-    mov tiro1y , 0
-    
-sem_tiro1:
+    call desenha_inimigos
     
     ;------------Verificacao Fim Fase-----------;
     

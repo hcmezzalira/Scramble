@@ -25,7 +25,7 @@ push SI
 loop_divisao:
     xor DX, DX
     div BX
-        
+    
     ; Converte o digito para ASCII
     add DL, '0'
     ; Salva na string
@@ -40,7 +40,7 @@ pop DX
 pop CX
 pop BX
 pop AX
-ret    
+ret
 score_to_ascii endp
 
 ; Exibe o score (ASCII)
@@ -54,14 +54,14 @@ push BP
     call score_to_ascii
     
     ; Mostra o score
-    mov BP, OFFSET score_valor_s 
-    mov AH, 13h                 
-    mov AL, 0h                  
-    xor BH, BH                  
-    mov BL, 0Ah                 
-    mov CX, TAM_SCORE_VALOR_S  
-    mov DH, 0                   
-    mov DL, 7                   
+    mov BP, OFFSET score_valor_s
+    mov AH, 13h
+    mov AL, 0h
+    xor BH, BH
+    mov BL, 0Ah
+    mov CX, TAM_SCORE_VALOR_S
+    mov DH, 0
+    mov DL, 7
     int 10h
     
 pop BP

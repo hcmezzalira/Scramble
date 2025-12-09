@@ -164,7 +164,6 @@ direita1:
     mov aux_linhas, AX        
     mov BX, jet_x             
     call desenha_sprite
-    ;jmp verificacao_fim1
     
 move_fim:
 pop ES
@@ -178,212 +177,206 @@ pop AX
 ret
 move_nave endp
 
+
+; Calcula pixel na posicao exata da memoria
+; Entradas:
+; AX = Posicao Y
+; DX = posicao X
+; Saidas: 
+; DI = Posicao na memoria 
 calcula_posicao proc
-    ; Entrada:
-    ;   AX = Y
-    ;   DX = X
-    ; Sa??da:
-    ;   DI = posi????o na VRAM (A000:DI)
+push AX
+push DX
 
-    push ax
-    push dx
+    mov DI, AX
+    shl DI, 6
+    shl AX, 8
+    add DI, AX
+    add DI, DX
 
-    mov di, ax          ; DI = Y
-    shl di, 6           ; DI = Y * 64
-    shl ax, 8           ; AX = Y * 256
-    add di, ax          ; DI = Y * 320
-    add di, dx          ; DI = Y * 320 + X
-
-    pop dx
-    pop ax
-    ret
+pop DX
+pop AX
+ret
 calcula_posicao endp
 
+; Desenha superficie da fase 1 e 2
 desenha_superficie_fase1 proc
-    push ax
-    push bx
-    push cx
-    push dx
-    push si
-    push di
-    push ds
-    push es
+push AX
+push BX
+push CX
+push DX
+push SI
+push DI
+push DS
+push ES
 
-    mov ax, SEG _DATA
-    mov ds, ax
+    mov AX, SEG _DATA
+    mov DS, AX
 
-    mov ax, 0A000h
-    mov es, ax
+    mov AX, 0A000h
+    mov ES, AX
 
-    ;-------------------------------------------
-    ; Posi????o inicial da superf??cie na tela
-    ; (inferior da tela: Y = 180)
-    ;-------------------------------------------
-    mov ax, 120
-    mov dx, 0
+    mov AX, 120          ; Posicao inicial Y
+    mov DX, 0            ; Posicao inicial Y
     call calcula_posicao 
 
-    ;-------------------------------------------
-    ; Configura????o inicial da superf??cie
-    ;-------------------------------------------
+    ; ---------- Verifica qual fase desenhar ----------- ;
     cmp fase, 1
     jz mundo_fase1
-    mov si, OFFSET fase2_superficie
+    mov SI, OFFSET fase2_superficie ; Move para SI o offset da sprite da superficie 2
     jmp mundo_fase2
 mundo_fase1:
-    mov si, OFFSET fase1_superficie
+    mov SI, OFFSET fase1_superficie ; Move para SI o offset da sprite da superficie 1
 mundo_fase2:
+    ; -------------------------------------------------- ;
     
-    mov bx, 490                 ; largura total da superf??cie
-    mov cx, 20                  ; altura total
+    mov BX, 490 ; Tamanho X da superficie
+    mov CX, 20  ; Tamanho Y da spuerficie
 
-    mov bp, desloc_superficie   ; deslocamento horizontal
+    mov BP, deslocamento ; BP guarda o deslocamento horizontal da superficie
 
-sup_linha:
-    push cx
-    push si
-    push di
+linha_superficie:
+push CX
+push SI
+push DI
 
-    mov cx, 320                 ; largura vis??vel (tela)
-    mov dx, bp                  ; deslocamento dentro da linha
-    add si, dx
+    mov CX, 320 ; Move 320 (largura da tela) para CX
+    mov DX, BP  ; DX recebe o deslocamento horizontal
+    add SI, DX  ; Ajusta SI conforme o deslocamento atual
 
-sup_coluna:
-    lodsb                       ; l?? byte da superf??cie
-    stosb                       ; escreve no v??deo
+coluna_superficie:
+    lodsb ; AL <- DS:[SI], SI++
+    stosb ; ES:[DI] <- AL, DI++
 
-    inc dx
-    cmp dx, bx
-    jb sup_ok
+    inc DX                 ; Avanca o deslocamento
+    cmp DX, BX             ; Verifica o final da sprite
+    jb continua_superficie ; Se nao chegou ao final avanca
 
-    ; loop horizontal (reinicia a linha)
-    sub dx, bx
-    sub si, bx
+    sub DX, BX ; Volta DX para dentro da largura
+    sub SI, BX ; Ajusta SI para simular sprite circular
 
-sup_ok:
-    loop sup_coluna
+continua_superficie:
+    loop coluna_superficie ; Ate desenhar os 320 pixels da linha
 
-    pop di
-    add di, 320                 ; pr??xima linha
-    pop si
-    add si, 490                 ; pr??xima linha do sprite
-    pop cx
-    loop sup_linha
+    ; Proxima linha da tela
+pop DI
+    add DI, 320
+    
+    ; Proxima linha da sprite
+pop SI
+    add SI, 490
+    
+    ; Ate todas as linhas da sprite
+pop CX
+    loop linha_superficie
 
-    ;-------------------------------------------
-    ; Atualiza deslocamento (velocidade)
-    ;-------------------------------------------
-    mov ax, bp
-    add ax, 1                   ; VELOCIDADE
+    mov AX, BP
+    add AX, 1  ; Altera a velocidade da superficie
                                 
-    cmp ax, 490
-    jb sup_scroll_ok
-    xor ax, ax
+    cmp AX, 490          ; Verifica limete da largura da sprite
+    jb scroll_superficie
+    xor AX, AX           ; Se passou, reinicia o deslocamento
 
-sup_scroll_ok:
-    mov desloc_superficie, ax
+scroll_superficie:
+    mov deslocamento, AX ; Salva novo deslocamento para o proximo frame
 
-    pop es
-    pop ds
-    pop di
-    pop si
-    pop dx
-    pop cx
-    pop bx
-    pop ax
-    ret
+pop ES
+pop DS
+pop DI
+pop SI
+pop DX
+pop CX
+pop BX
+pop AX
+ret
 desenha_superficie_fase1 endp
 
+; Desenha superficie da fase 3
 desenha_superficie_fase3 proc
-    push ax
-    push bx
-    push cx
-    push dx
-    push si
-    push di
-    push ds
-    push es
-
-    mov ax, SEG _DATA
-    mov ds, ax
-
-    mov ax, 0A000h
-    mov es, ax
-
-    ;-------------------------------------------
-    ; Posi????o inicial da superf??cie na tela
-    ; (inferior da tela: Y = 87)
-    ;-------------------------------------------
-    mov ax, 87
-    mov dx, 0
-    call calcula_posicao 
-
-    ;-------------------------------------------
-    ; Configura????o inicial da superf??cie
-    ;-------------------------------------------
-
-    mov si, OFFSET fase3_superficie
+push AX
+push BX
+push CX
+push DX
+push SI
+push DI 
+push DS
+push ES
     
-    mov bx, 480                 ; largura total da superf??cie
-    mov cx, 112                 ; altura total
+    mov AX, SEG _DATA
+    mov DS, AX
 
-    mov bp, desloc_superficie   ; deslocamento horizontal
+    mov AX, 0A000h
+    mov ES, AX
 
-sup_linha3:
-    push cx
-    push si
-    push di
+    mov AX, 111          ; Posicao inicial Y
+    mov DX, 0            ; Posicao inicial X
+    call calcula_posicao
 
-    mov cx, 320                 ; largura vis??vel (tela)
-    mov dx, bp                  ; deslocamento dentro da linha
-    add si, dx
+    mov SI, OFFSET fase3_superficie ; Move para SI o offset da sprite 
+    
+    mov BX, 480 ; Tamanho X da superficie
+    mov CX, 92  ; Tamanho Y da superficie
 
-sup_coluna3:
-    lodsb                       ; l?? byte da superf??cie
-    stosb                       ; escreve no v??deo
+    mov BP, deslocamento ; BP guarda o deslocamento horizontal da superficie
 
-    inc dx
-    cmp dx, bx
-    jb sup_ok3
+linha_superficie3:
+push CX
+push SI
+push DI
 
-    ; loop horizontal (reinicia a linha)
-    sub dx, bx
-    sub si, bx
+    mov CX, 320 ; Move 320 (largura da tela) para CX
+    mov DX, BP  ; DX recebe o deslocamento horizontal
+    add SI, DX  ; Ajusta SI conforme o deslocamento atual
 
-sup_ok3:
-    loop sup_coluna3
+coluna_superficie3:
+    lodsb ; AL <- DS:[SI], SI++
+    stosb ; ES:[DI] <- AL, DI++
 
-    pop di
-    add di, 320                 ; pr??xima linha
-    pop si
-    add si, 480                 ; pr??xima linha do sprite
-    pop cx
-    loop sup_linha3
+    inc DX                  ; Avanca o deslocamento
+    cmp DX, BX              ; Verifica o final da sprite
+    jb continua_superficie3 ; Se nao chegou ao final avanca
 
-    ;-------------------------------------------
-    ; Atualiza deslocamento (velocidade)
-    ;-------------------------------------------
-    mov ax, bp
-    add ax, 1                   ; VELOCIDADE
-                                
-    cmp ax, 480
-    jb sup_scroll_ok3
-    xor ax, ax
+    sub DX, BX ; Volta DX para dentro da largura
+    sub SI, BX ; Ajusta SI para simular sprite circular
 
-sup_scroll_ok3:
-    mov desloc_superficie, ax
+continua_superficie3:
+    loop coluna_superficie3 ; Ate desenhar os 320 pixels da linha
 
-    pop es
-    pop ds
-    pop di
-    pop si
-    pop dx
-    pop cx
-    pop bx
-    pop ax
-    ret
+    ; Proxima linha da tela
+pop DI
+    add DI, 320
+    
+    ; Proxima linha da sprite
+pop SI
+    add SI, 480
+    
+    ; Ate todas as linhas da sprite
+pop CX
+    loop linha_superficie3
+
+    
+    mov AX, BP
+    add AX, 1  ; Altera a velocidade da superficie
+
+    cmp AX, 480           ; Verifica limete da largura da sprite
+    jb scroll_superficie3
+    xor AX, AX            ; Se passou, reinicia o deslocamento
+
+scroll_superficie3:
+    mov deslocamento, AX ; Salva novo deslocamento para o proximo frame
+
+pop ES
+pop DS
+pop DI
+pop SI
+pop DX
+pop CX
+pop BX
+pop AX
+ret
 desenha_superficie_fase3 endp
 
+; Rotina que desenha as vidas no cabecalho
 desenha_vidas proc
     ; Parametros para exibicao das vidas restantes
     mov BX, 130                ; Deslocamento inicial X
