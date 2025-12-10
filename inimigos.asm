@@ -22,31 +22,29 @@ procura_slot:
 achou_slot:
     mov inimigo_ativo[SI], 1
 
-    ; X inicial = 319 (borda direita)
+    ; X inicial = 290 (borda direita)
     mov BX, SI
-    shl BX, 1
-    mov word ptr inimigo_x[BX], 319
+    shl BX, 1                       ; Multiplica por 2 por ser dw
+    mov word ptr inimigo_x[BX], 289
 
-    ; Gera Y aleatorio (8?100)
+    ; Gera Y aleatorio (8-100)
     mov AH, 00h
     int 1Ah
     mov AX, DX
     xor DX, DX
-    mov CX, 93          ; faixa = 100 - 8 + 1
-    div CX              ; AX / 93 ? DX = resto (0?92)
-    add DX, 8           ; desloca para 8?100
+    mov CX, 85
+    div CX
+    add DX, 8
     mov word ptr inimigo_y[BX], DX
 
     ; Tipo e sprite
     cmp fase, 2
     jz inimigo_fase2
     mov inimigo_tipo[SI], 0
-    mov inimigo_sprite[SI], 0
     jmp fim_cria
     
 inimigo_fase2:
     mov inimigo_tipo[SI], 1
-    mov inimigo_sprite[SI], 1
     
 fim_cria:
 pop SI
@@ -70,18 +68,32 @@ loop_atualizai:
     jne proximoi
 
     mov bx, si
-    shl bx, 1            ; bx = si * 2
+    shl bx, 1  ; bx = si * 2
 
     ; Move inimigo para a esquerda
     mov ax, inimigo_x[bx]
     dec ax
     mov inimigo_x[bx], ax
 
-    ; Saiu da tela?
+    ; Saiu da tela
     cmp ax, 0
     jg proximoi
-    mov inimigo_ativo[si], 0
-
+    mov inimigo_ativo[SI], 0
+    
+    mov DX, inimigo_y[BX]
+    mov AX, inimigo_x[BX]
+    
+push BX
+push SI
+    mov BX, AX
+    inc BX
+    mov aux_linhas, 13
+    mov aux_colunas, 29
+    mov SI, OFFSET bug_fix
+    call desenha_sprite
+pop SI
+pop BX
+    
 proximoi:
     inc si
     loop loop_atualizai
@@ -116,7 +128,7 @@ loop_desenha:
     cmp inimigo_ativo[si], 1
     jne proximo_desenha
 
-    ; Calcula posi??o na VRAM
+    ; Calcula posicao na VRAM
     mov bx, si
     shl bx, 1
     
@@ -124,10 +136,11 @@ loop_desenha:
     mov AX, inimigo_x[bx] ; X
 
     ; Ponteiro da sprite
-    cmp inimigo_tipo[BX], 0
+    cmp inimigo_tipo[SI], 1
     jz desenha_meteoroi
     mov SI, OFFSET nave_alien
     jmp ialien
+    
 desenha_meteoroi:
     mov SI, OFFSET meteoro
     
@@ -137,6 +150,11 @@ push BX
     mov BX, AX
     mov aux_linhas, sprites_menu_l
     mov aux_colunas, sprites_menu_c
+    call desenha_sprite
+    
+    add BX, 29
+    mov aux_colunas, 1
+    mov SI, OFFSET limpa_sm_v
     call desenha_sprite
 pop BX
 

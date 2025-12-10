@@ -13,8 +13,17 @@ push DI
 push SI
 push ES
     
+    ; Reseta timer 
     mov tempo_valor, tempo_fases
+    ; Altera fase para 3 (utilizado na soma dos pontos de sobrevivencia)
     mov fase, 3
+    
+    ; Reseta o tipo dos inimigos
+    mov inimigo_ativo[0], 0
+    mov inimigo_ativo[1], 0
+    mov inimigo_ativo[2], 0
+    mov inimigo_ativo[3], 0
+    mov inimigo_ativo[4], 0
 
     ; Limpa a tela
     mov AL, 13h
@@ -36,8 +45,8 @@ push ES
     mov DL, 0        
     int 10h
     
-    ;Delay de 4 segundos
-    call delay_4seg
+    ; Delay de 4 segundos inicio da fase 
+    ;call delay_4seg
     
     ; Limpa a tela
     mov AL, 13h
@@ -79,8 +88,9 @@ push ES
    
     ;Desenha nave na posicao inicial
     mov jet_x, 10
-    mov jet_y, 60
+    mov jet_y, 90
     
+    ; Desenha nave jet posicao inicial
     mov SI, OFFSET nave_jet ; Move para SI o offset da sprite
     mov AX, sprites_menu_c  ; Move para AX o numero de colunas da sprite
     mov aux_colunas, AX     ; Move para aux_colunas o AX
@@ -107,21 +117,22 @@ atualiza_jogo_fase3:
     ; Mostra as vidas
     call desenha_vidas
     
-    ; Desenha nave jet novamente (Teste)
-    mov SI, OFFSET nave_jet ; Move para SI o offset da sprite
-    mov AX, sprites_menu_c  ; Move para AX o numero de colunas da sprite
-    mov aux_colunas, AX     ; Move para aux_colunas o AX
-    mov AX, sprites_menu_l  ; Move para AX o numero de linhas da sprite
-    mov aux_linhas, AX      ; Move para aux_linhas o AX
-    mov BX, jet_x           ; Move para BX a posicao X
-    mov DX, jet_y           ; Move para DX a posicao Y
-    call desenha_sprite
-    
     ; Desenha o mundo
     call desenha_superficie_fase3
     
     ; Movimenta a nave
     call move_nave
+    
+    ; Cria os inimigos
+    call cria_inimigo
+    
+    ; Atualiza posicao dos inimigos 
+    call atualiza_inimigos
+    
+    ; Desenha os inimigos 
+    call desenha_inimigos
+    
+    ;------------Verificacao Fim Fase-----------;
     
     ; Verifica o fim do jogo (tempo e vidas)
 verificacao_fim3:
@@ -129,10 +140,12 @@ verificacao_fim3:
     cmp AL, 0
     jz fim_fase3
     
+    ; Verifica se o tempo acabou e finaliza a fase
     mov AX, tempo_valor
     cmp AX, 0
     jnz cont_fase3
     jmp fim_fase3
+    
 cont_fase3:
     jmp atualiza_jogo_fase3
         

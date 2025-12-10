@@ -17,6 +17,13 @@ push ES
     mov tempo_valor, tempo_fases
     ; Altera fase para 2 (utilizado na soma dos pontos de sobrevivencia)
     mov fase, 2
+    
+    ; Reseta o tipo dos inimigos
+    mov inimigo_ativo[0], 0
+    mov inimigo_ativo[1], 0
+    mov inimigo_ativo[2], 0
+    mov inimigo_ativo[3], 0
+    mov inimigo_ativo[4], 0
 
     ; Limpa a tela
     mov AL, 13h
@@ -39,7 +46,7 @@ push ES
     int 10h
     
     ;Delay de 4 segundos inicio da fase
-    call delay_4seg
+    ;call delay_4seg
     
     ; Limpa a tela
     mov AL, 13h
@@ -104,6 +111,7 @@ pinta_linha_y2:
     mov jet_x, 10
     mov jet_y, 100
     
+    ; Desenha nave jet posicao inicial
     mov SI, OFFSET nave_jet ; Move para SI o offset da sprite
     mov AX, sprites_menu_c  ; Move para AX o numero de colunas da sprite
     mov aux_colunas, AX     ; Move para aux_colunas o AX
@@ -136,17 +144,30 @@ atualiza_jogo_fase2:
     ; Movimenta a nave
     call move_nave
     
+    ; Cria os inimigos
+    call cria_inimigo
+    
+    ; Atualiza posicao dos inimigos
+    call atualiza_inimigos
+    
+    ; Desenha os inimigos
+    call desenha_inimigos
+    
+    ;------------Verificacao Fim Fase-----------;
+    
     ; Verifica o fim do jogo (tempo e vidas)
 verificacao_fim2:
     mov AL, vidas
     cmp AL, 0
     jz fim_fase2
     
+    ; Verifica se o tempo acabou e passa para proxima fase
     mov AX, tempo_valor
     cmp AX, 0
     jnz cont_fase2
     call fase3
     jmp fim_fase2
+    
 cont_fase2:
     jmp atualiza_jogo_fase2
         

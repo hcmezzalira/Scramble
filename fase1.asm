@@ -13,9 +13,10 @@ push DI
 push SI
 push ES
     
+    ; Reseta timer 
+    mov tempo_valor, tempo_fases
     ; Altera fase para 1 (utilizado na soma dos pontos de sobrevivencia)
     mov fase, 1
-    mov tempo_valor, tempo_fases
 
     ; Limpa a tela
     mov AL, 13h
@@ -77,10 +78,6 @@ push ES
     mov DH, 0       
     mov DL, 32        
     int 10h
-   
-    ; Desenha nave na posicao inicial
-    mov jet_x, 10
-    mov jet_y, 100
     
     ; Preenche fundo do planeta cor azul (y >= 139)
     mov AX, 0A000h
@@ -102,6 +99,10 @@ pinta_linha_y1:
     inc SI             
     cmp SI, 200        
     jl pinta_linha_y1
+    
+    ; Desenha nave na posicao inicial
+    mov jet_x, 10
+    mov jet_y, 100
     
     ; Desenha nave jet posicao inicial
     mov SI, OFFSET nave_jet ; Move para SI o offset da sprite
@@ -136,10 +137,13 @@ atualiza_jogo_fase1:
     ; Movimenta a nave
     call move_nave
     
+    ; Cria os inimigos
     call cria_inimigo
     
+    ; Atualiza posicao dos inimigos 
     call atualiza_inimigos
     
+    ; Desenha os inimigos 
     call desenha_inimigos
     
     ;------------Verificacao Fim Fase-----------;
