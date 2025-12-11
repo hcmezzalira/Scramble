@@ -6,6 +6,8 @@
 .code
 
 menu_loop proc
+    mov direcao_alien, 1
+    
     ; Modo video 320x200
     mov AL, 13h
     mov AH, 0
@@ -25,8 +27,8 @@ menu_loop proc
     mov BX, 1   ; Deslocamento inicial X da nave Jet
     mov DI, 291 ; Deslocamento inicial X da nave Alien           
     
-    mov AX, sprites_menu_l     ; Move para AX o numero de linhas das sprites do menu
-    mov aux_linhas, AX         ; Move para aux_linhas o AX
+    mov AX, sprites_menu_l ; Move para AX o numero de linhas das sprites do menu
+    mov aux_linhas, AX     ; Move para aux_linhas o AX
     
     ; Loop do menu para selecionar entre jogar e sair e movimentar os sprites
 loop_menu:
@@ -65,7 +67,7 @@ push BX ; Salva na pilha a posicao da nave Jet
     ; Desenhar nave indo da Direita para a Esquerda
 esquerda:
     ; Limpa coluna
-    add DI, 28                ; Adiciona 29 (numero de colunas da sprite - 1) a DI (posicao X) para limpar a ultima coluna da sprite
+    add DI, 28                ; Adiciona 28 (numero de colunas da sprite - 1) a DI (posicao X) para limpar a ultima coluna da sprite
     mov DX, 120               ; Move 120 para DX (posicao Y)
     mov SI, OFFSET limpa_sm_v ; Move para SI o offset da sprite
     mov AX, 1                 ; Move para 1 (numero de colunas) para AX
@@ -75,7 +77,7 @@ esquerda:
     
     ; Verificacao de primeira linha
     dec DI                ; Decrementa DI para verificar o inicio da linha e desenhar a sprite na proxima coluna
-    sub DI, 28            ; Subtrai 29 (numero de colunas da sprite - 1) para verificar o inicio da linha
+    sub DI, 28            ; Subtrai 28 (numero de colunas da sprite - 1) para verificar o inicio da linha
     cmp DI, 0             ; Compara para verificar se chegou ao inicio
     jnz nao_inverte_e     ; Se igual a 0 inverte a direcao, se diferente pula e mantem a mesma direcao
     mov AX, 0             ; Move 0 (0 = Direita para Esquerda) para AX

@@ -3,13 +3,13 @@
     ;-------Rotinas referente as rotinas graficas dos sprites----------;
     ;------------------------------------------------------------------;
     
-; Desenha nave que representa as vidas
+    ; Rotina que desenha as sprites
 ; Entradas:
-; SI = offset do sprite
-; DX = posicao vertical
-; BX = posicao horizontal
-; aux_colunas = numero de colunas
-; aux_linhas = numero de linhas 
+    ; SI = offset do sprite
+    ; DX = posicao vertical
+    ; BX = posicao horizontal
+    ; aux_colunas = numero de colunas
+    ; aux_linhas = numero de linhas 
 desenha_sprite proc
 push AX
 push BX

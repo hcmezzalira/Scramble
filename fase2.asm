@@ -46,7 +46,7 @@ push ES
     int 10h
     
     ;Delay de 4 segundos inicio da fase
-    ;call delay_4seg
+    call delay_4seg
     
     ; Limpa a tela
     mov AL, 13h
@@ -166,12 +166,39 @@ verificacao_fim2:
     cmp AX, 0
     jnz cont_fase2
     call fase3
-    jmp fim_fase2
+    jmp menu_loop
     
 cont_fase2:
     jmp atualiza_jogo_fase2
         
 fim_fase2:
+    
+    mov AL, vidas
+    cmp AL, 0
+    jnz fim_fase22
+    
+    ; Limpa a tela
+    mov AL, 13h
+    mov AH, 0
+    int 10h
+    
+    ; Desenha GameOver posicao inicial
+    mov BP, OFFSET gameover   
+    mov AH, 13h      
+    mov AL, 0h       
+    xor BH, BH       
+    mov BL, 04h     
+    mov CX, TAM_GAMEOVER  
+    mov DH, 9       
+    mov DL, 0        
+    int 10h
+    
+    ; Delay de 4 segundos gameover 
+    call delay_4seg
+    
+    mov score_valor, 0
+    
+fim_fase22:
 pop ES
 pop SI
 pop DI

@@ -46,7 +46,7 @@ push ES
     int 10h
     
     ; Delay de 4 segundos inicio da fase 
-    ;call delay_4seg
+    call delay_4seg
     
     ; Limpa a tela
     mov AL, 13h
@@ -64,7 +64,7 @@ push ES
     mov DS, AX
     mov ES, AX
 
-    ; Mostra palavra score no cabe?alho da fase
+    ; Mostra palavra score no cabecalho da fase
     mov BP, OFFSET score   
     mov AH, 13h      
     mov AL, 0h       
@@ -138,18 +138,63 @@ atualiza_jogo_fase3:
 verificacao_fim3:
     mov AL, vidas
     cmp AL, 0
-    jz fim_fase3
+    jnz continua_fase3
+    
+    ; Limpa a tela
+    mov AL, 13h
+    mov AH, 0
+    int 10h
+    
+    ; Desenha GameOver posicao inicial
+    mov BP, OFFSET gameover   
+    mov AH, 13h      
+    mov AL, 0h       
+    xor BH, BH       
+    mov BL, 04h     
+    mov CX, TAM_GAMEOVER  
+    mov DH, 9       
+    mov DL, 0        
+    int 10h
+    
+    ; Delay de 4 segundos gameover 
+    call delay_4seg
+    
+    mov score_valor, 0
+    
+    jmp menu_loop
+    
+continua_fase3:
     
     ; Verifica se o tempo acabou e finaliza a fase
     mov AX, tempo_valor
     cmp AX, 0
     jnz cont_fase3
-    jmp fim_fase3
     
+    ; Limpa a tela
+    mov AL, 13h
+    mov AH, 0
+    int 10h
+    
+    ; Desenha Vencedor posicao inicial
+    mov BP, OFFSET vencedor   
+    mov AH, 13h      
+    mov AL, 0h       
+    xor BH, BH       
+    mov BL, 01h     
+    mov CX, TAM_VENCEDOR  
+    mov DH, 9       
+    mov DL, 0        
+    int 10h
+    
+    ; Delay de 4 segundos vencedor 
+    call delay_4seg
+    
+    jmp fim_fase3    
 cont_fase3:
     jmp atualiza_jogo_fase3
         
 fim_fase3:
+    
 pop ES
 pop SI
 pop DI

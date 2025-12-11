@@ -3,15 +3,17 @@
     ;-----------Rotinas referente aos inimigos das fases---------------;
     ;------------------------------------------------------------------;
 
+; Rotina para verificar e criar novos inimigos
 cria_inimigo proc
 push AX
 push BX
 push CX
 push SI
 
-mov CX, 5
+    mov CX, 5
     xor SI, SI
 
+    ; Verifica se existe algum slot livre
 procura_slot:
     cmp inimigo_ativo[SI], 0
     je achou_slot
@@ -20,14 +22,14 @@ procura_slot:
     jmp fim_cria
 
 achou_slot:
-    mov inimigo_ativo[SI], 1
+    mov inimigo_ativo[SI], 1 ; Altera para inimigo ativo
 
     ; X inicial = 290 (borda direita)
     mov BX, SI
     shl BX, 1                       ; Multiplica por 2 por ser dw
     mov word ptr inimigo_x[BX], 289
 
-    ; Gera Y aleatorio (8-100)
+    ; Gera Y aleatorio (8-94)
     mov AH, 00h
     int 1Ah
     mov AX, DX
@@ -54,35 +56,38 @@ pop AX
 ret
 cria_inimigo endp
 
+; Rotina para atualizar a posicao dos inimigos
 atualiza_inimigos proc
-push ax
-push bx
-push cx
-push si
+push AX
+push BX
+push CX
+push SI
 
-    mov cx, 5
-    xor si, si
-
+    mov CX, 5
+    xor SI, SI
+    
+    ; Verifica se existe inimigo ativo
 loop_atualizai:
-    cmp inimigo_ativo[si], 1
+    cmp inimigo_ativo[SI], 1
     jne proximoi
 
-    mov bx, si
-    shl bx, 1  ; bx = si * 2
+    mov BX, SI
+    shl BX, 1  ; bx = si * 2
 
     ; Move inimigo para a esquerda
-    mov ax, inimigo_x[bx]
-    dec ax
-    mov inimigo_x[bx], ax
+    mov AX, inimigo_x[BX]
+    dec AX
+    mov inimigo_x[BX], AX
 
     ; Saiu da tela
-    cmp ax, 0
+    cmp AX, 0
     jg proximoi
     mov inimigo_ativo[SI], 0
     
     mov DX, inimigo_y[BX]
     mov AX, inimigo_x[BX]
     
+    ; Trecho que limpa o inimigo no inicio da tela
 push BX
 push SI
     mov BX, AX
@@ -95,47 +100,49 @@ pop SI
 pop BX
     
 proximoi:
-    inc si
+    inc SI
     loop loop_atualizai
 
-pop si
-pop cx
-pop bx
-pop ax
+pop SI
+pop CX
+pop BX
+pop AX
 ret
 atualiza_inimigos endp
 
+; Rotina que desenha os inimigos
 desenha_inimigos proc
-push ax
-push bx
-push cx
-push dx
-push si
-push di
-push ds
-push es
+push AX
+push BX
+push CX
+push DX
+push SI
+push DI
+push DS
+push ES
 
-    mov ax, SEG _DATA
-    mov ds, ax
+    mov AX, SEG _DATA
+    mov DS, AX
 
-    mov ax, 0A000h
-    mov es, ax
+    mov AX, 0A000h
+    mov ES, AX
 
-    mov cx, 5
-    xor si, si
-
+    mov CX, 5
+    xor SI, SI
+    
 loop_desenha:
-    cmp inimigo_ativo[si], 1
+    ; Verifica se existe algum inimigo ativo
+    cmp inimigo_ativo[SI], 1
     jne proximo_desenha
 
     ; Calcula posicao na VRAM
-    mov bx, si
-    shl bx, 1
+    mov BX, SI
+    shl BX, 1
     
-    mov DX, inimigo_y[bx] ; Y
-    mov AX, inimigo_x[bx] ; X
+    mov DX, inimigo_y[BX] ; Y
+    mov AX, inimigo_x[BX] ; X
 
-    ; Ponteiro da sprite
+    ; Ponteiro da sprite, verifica qual tipo do inimigo
     cmp inimigo_tipo[SI], 1
     jz desenha_meteoroi
     mov SI, OFFSET nave_alien
@@ -160,17 +167,17 @@ pop BX
 
 
 proximo_desenha:
-    inc si
+    inc SI
     loop loop_desenha
 
-pop es
-pop ds
-pop di
-pop si
-pop dx
-pop cx
-pop bx
-pop ax
+pop ES
+pop DS
+pop DI
+pop SI
+pop DX
+pop CX
+pop BX
+pop AX
 ret
 desenha_inimigos endp
     ; Fim inimigos.asm

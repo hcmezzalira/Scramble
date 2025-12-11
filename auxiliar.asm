@@ -2,7 +2,8 @@
     ;------------------------------------------------------------------;
     ;-----------Rotinas referente a Movimentacao das naves-------------;
     ;------------------------------------------------------------------;
-    
+
+; Rotina que detecta movimento da nave Jet
 move_nave proc
 push AX
 push BX
@@ -180,19 +181,19 @@ move_nave endp
 
 ; Calcula pixel na posicao exata da memoria
 ; Entradas:
-; AX = Posicao Y
-; DX = posicao X
+    ; AX = Posicao Y
+    ; DX = posicao X
 ; Saidas: 
-; DI = Posicao na memoria 
+    ; DI = Posicao na memoria 
 calcula_posicao proc
 push AX
 push DX
 
-    mov DI, AX
-    shl DI, 6
-    shl AX, 8
-    add DI, AX
-    add DI, DX
+    mov DI, AX ; Move para DI a posicao Y
+    shl DI, 6  ; Multiplica por 64
+    shl AX, 8  ; Multiplica por 256
+    add DI, AX ; Soma DI*64 e AX*256
+    add DI, DX ; Soma DI com DX
 
 pop DX
 pop AX
@@ -387,13 +388,14 @@ desenha_vidas proc
     mov AX, nave_vidas_colunas ; Carrega em AX o numero de colunas
     mov aux_colunas, AX        ; Carrega o numero de colunas da sprite em aux_colunas
     
-    xor AX, AX                ; Zera AX
-    mov AL, vidas             ; Carrega em AL o numero de vidas
-    mov CX, AX                ; Carrega em CX o numero de vidas para o loop 
+    xor AX, AX    ; Zera AX
+    mov AL, vidas ; Carrega em AL o numero de vidas
+    mov CX, AX    ; Carrega em CX o numero de vidas para o loop 
+
 numero_vidas:
     call desenha_sprite ; Desenha a nave da vida (Entrada BX: Deslocamento)
-    add BX, 30              ; Espacamento entre as naves
-    loop numero_vidas       ; Ate nao ter mais vidas decrementa CX
+    add BX, 30          ; Espacamento entre as naves
+    loop numero_vidas   ; Ate nao ter mais vidas decrementa CX
 ret
 desenha_vidas endp
     

@@ -4,7 +4,7 @@
 .data
 
 ; Arquivos de dados utilizados
-include dados.asm     
+include dados.asm      
     
 .code
 
@@ -28,7 +28,7 @@ espera_tecla endp
 
 ; Rotina para ler teclado sem parar o programa
 ; Saida: 
-;       AH = Tecla pressionada
+    ; AH = Tecla pressionada
 le_tecla proc
     
     ; Verifica tecla

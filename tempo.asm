@@ -32,6 +32,7 @@ push ES
     dec CX               ; Diminui um segundo do timer
     mov tempo_valor, CX  ; Armazena em tempo_valor o tempo restante
     
+    ; Compara para verificar qual valor adicionar a pontuacao
     cmp fase, 1
     jnz cmpfase2
     add score_valor, 10
